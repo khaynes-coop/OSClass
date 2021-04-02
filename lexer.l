@@ -5,11 +5,11 @@ DIGIT [0-9]
 META    [\[\]{},:]
 QUOTE   ["]
 NOTQUOTE    [^"]
-
+%x          expect_string
 %%
 
 [ \t\r\n] {}
-{QUOTE}         {BEGIN(expect_string); return META}
+{QUOTE}                     {BEGIN(expect_string); return META;}
 <expect_string>{NOTQUOTE}*  return STRINGLIT;
 <expect_string>{QUOTE}      {BEGIN(INITIAL); return META;}
 
