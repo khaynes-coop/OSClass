@@ -1,0 +1,5 @@
+*Make sure you sudo apt install flex*
+flex lexer.l
+gcc main.c lex.yy.c -lfl
+./a.out
+enter numbers, words, strings, ect and then press enter
