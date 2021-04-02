@@ -11,19 +11,29 @@ int main() {
         int token = yylex();
         if(token == 0){break;}
         if(token == WORDS){
-            printf("Word | %s", yytext);
+            printf("Word | %s\n", yytext);
         }
         else if(token == NAME){
-            printf("Name | %s", yytext);
+            printf("Name | %s\n", yytext);
         }
         else if(token == NUMBER){
-            printf("Number | %s", yytext);
+            printf("Number | %s\n", yytext);
         }
         else if(token == GREETING){
-            printf("Greeting | %s", yytext);
+            printf("Greeting | %s\n", yytext);
         }
+        else if(token == STRINGLIT){
+            printf("String | %s\n", yytext);
+        }
+        else if(token == NEWLINE){
+            printf("Newline | %s", yytext);
+        }
+        else if(token == META){
+            printf("Meta | %s\n", yytext);
+        }
+
         else{
-            printf("Unknown | %s", yytext);
+            printf("Unknown | %s\n", yytext);
         }
 
     }

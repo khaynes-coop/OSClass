@@ -8,6 +8,9 @@ enum token_type{
     GREETING = 1,
     NAME,
     WORDS,
+    META,
+    NEWLINE,
+    STRINGLIT,
     NUMBER
 
 };
