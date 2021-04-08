@@ -1,5 +1,6 @@
-*Make sure you sudo apt install flex*
+*Make sure you sudo apt-get install flex and sudo apt-get install Bison*
+bison -d tokensBison.y
 flex lexer.l
-gcc main.c lex.yy.c -lfl
+gcc main.c tokensBison.tab.c lex.yy.c -lfl
 ./a.out
 enter numbers, words, strings, ect and then press enter

@@ -1,5 +1,7 @@
 %{
-#include "tokens.h"
+#include <stdio.h>
+#include <string.h>
+#include "tokensBison.tab.h"
 %}
 DIGIT [0-9]
 META    [\[\]{},:]
@@ -8,15 +10,19 @@ NOTQUOTE    [^"]
 %x          expect_string
 %%
 
-[ \t\r\n] {}
-{QUOTE}                     {BEGIN(expect_string); return META;}
-<expect_string>{NOTQUOTE}*  return STRINGLIT;
-<expect_string>{QUOTE}      {BEGIN(INITIAL); return META;}
 
-hello|hey|hi    return GREETING;
-[A-Z][a-z]*     return NAME;
-[a-z]+          return WORDS;
-"\n"            return NEWLINE;
-{DIGIT}+|{DIGIT}*"."{DIGIT}+    return NUMBER;
-{META} return META;
+"\n"            { return NEWLINE; }
+[ \t\r\n] {}
+{QUOTE}                     { BEGIN(expect_string); return META; }
+<expect_string>{NOTQUOTE}*  { yylval.sval = strdup(yytext); return STRINGLIT; }
+<expect_string>{QUOTE}      { BEGIN(INITIAL); return META; }
+
+exit|Exit|EXIT  { yylval.sval = strdup(yytext); return EXITTOKEN; }
+hello|hey|hi    { yylval.sval = strdup(yytext); return GREETING; }
+
+
+[A-Z][a-z]*     { yylval.sval = strdup(yytext); return NAME; }
+[a-z]+          { yylval.sval = strdup(yytext); return WORDS; }
+{DIGIT}+|{DIGIT}*"."{DIGIT}+     { return NUMBER; }
+{META} { return META; }
 
