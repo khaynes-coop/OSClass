@@ -23,6 +23,6 @@ hello|hey|hi    { yylval.sval = strdup(yytext); return GREETING; }
 
 [A-Z][a-z]*     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+          { yylval.sval = strdup(yytext); return WORDS; }
-{DIGIT}+|{DIGIT}*"."{DIGIT}+     { return NUMBER; }
+{DIGIT}+|{DIGIT}*"."{DIGIT}+     { yylval.number = atoi(yytext); return NUMBER; }
 {META} { return META; }
 
