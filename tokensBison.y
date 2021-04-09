@@ -1,32 +1,29 @@
 %{
   #include <stdio.h>
   #include <stdlib.h>
-  // Declare stuff from Flex that Bison needs to know about:
-  int yylex();
-  void yyerror(const char *s);
+  #include <env.h>
 
-  /*NUMBER tokensBison        { printf("bison found a Number: %d\n", $1); }
-      | WORDS tokensBison       { printf("bison found a Word: %s\n", $1); free($1); }
-      | STRINGLIT tokensBison   { printf("bison found a String: %s\n", $1); free($1); }
-      | GREETING tokensBison    { printf("bison found a Greeting: %s\n", $1); free($1); }
-      | NAME tokensBison        { printf("bison found a Name: %s\n", $1); free($1); }
-      | META tokensBison        { printf("bison found a Meta Val: %s\n", $1); free($1); }
-      | EXITTOKEN tokensBison   { printf("bison found an Exit Token"); exit(1); }
-      |
-  */
+
+//variables
+  int yylex();
+  char** environ;
+ //functions
+  void yyerror(const char *s);
+  void printenv();
 %}
 
 
 
-%token NUMBER STRINGLIT WORDS GREETING NAME META NEWLINE EXITTOKEN
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV
 %type <number> NUMBER
-%type <sval> STRINGLIT
 %type <sval> NEWLINE
 %type <sval> WORDS
 %type <sval> GREETING
 %type <sval> NAME
 %type <sval> META
 %type <sval> EXITTOKEN
+%type <sval> SETENV
+%type <sval> PRINTENV
 
 %union {
   int number;
@@ -40,23 +37,31 @@ prog:
 STMTS  :
  | STMT NEWLINE STMTS
  | STMT STMT NEWLINE STMTS
- | STMT STMT STMT STMTS
+ | STMT STMT STMT NEWLINE STMTS
  | NEWLINE STMTS
 ;
 STMT:
-   NUMBER                  { printf("bison found a Number: %d\n", $1); }
+  | NUMBER                  { printf("bison found a Number: %d\n", $1); }
   | WORDS                   { printf("bison found a Word: %s\n", $1); }
-  | STRINGLIT               { printf("bison found a String: %s\n", $1);  }
   | GREETING                { printf("bison found a Greeting: %s\n", $1);  }
   | NAME                    { printf("bison found a Name: %s\n", $1); }
   | META                    { printf("bison found a Meta Val: %s\n", $1); }
   | EXITTOKEN               { printf("bison found an Exit Token"); exit(1); }
-  |
+  | SETENV WORDS WORDS      { printf("bison found input variables: %s\n %s\n ", $1, $2); setenv( $2, $3, 1); }
+  | PRINTENV                { printenv(); }
   ;
 
 
   %%
 
   void yyerror(const char *s){
-  printf("bison found an Error: %s\n", s);
-  exit(1);}
+    printf("bison found an Error: %s\n", s);
+    exit(1);
+  }
+
+  void printenv(){
+    char **var;
+    for(var = environ; *var!=NULL;++var) {
+          printf("%s\n",*var);
+    }
+  }
