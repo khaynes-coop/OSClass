@@ -104,6 +104,7 @@ void cde() {
       {
         printf("no such file or directory\n");
       } 
+      }
 
 void UnSetEnv(char* input){
     char delim[] = " ";
