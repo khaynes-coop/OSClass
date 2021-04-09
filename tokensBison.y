@@ -40,6 +40,8 @@ prog:
 STMTS  :
  | STMT NEWLINE STMTS
  | STMT STMT NEWLINE STMTS
+ | STMT STMT STMT STMTS
+ | NEWLINE STMTS
 ;
 STMT:
    NUMBER                  { printf("bison found a Number: %d\n", $1); }
