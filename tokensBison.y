@@ -10,11 +10,13 @@
   void yyerror(const char *s);
   void printenv();
   void SetEnv(char* input);
+  void cd(char* input);
+  void cde();
 %}
 
 
-
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV
+ 
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV CD CDE
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -24,6 +26,8 @@
 %type <sval> EXITTOKEN
 %type <sval> SETENV
 %type <sval> PRINTENV
+%type <sval> CD
+%type <sval> CDE
 
 %union {
   int number;
@@ -47,6 +51,8 @@ STMT:
   | EXITTOKEN               { printf("bison found an Exit Token"); exit(1); }
   | SETENV                  { SetEnv( $1 ); }
   | PRINTENV                { printenv(); }
+  | CD                      { cd( $1 ); }
+  | CDE                     { cde(); }
   ;
 
 
@@ -71,4 +77,26 @@ void SetEnv(char* input){
     char* ptr3 = strtok(NULL, "/0");
     //printf("$2 is %s, $3 is %s", ptr2, ptr3);
     setenv(ptr2, ptr3, 1);
+}
+
+void cd(char* input) {
+  int ret;
+  char delim[] = " ";
+    char* ptr1 = strtok(input, delim);
+    char* ptr2 = strtok(NULL, "/0");
+      ret = chdir(ptr2);
+      if (ret != 0)
+      {
+        printf("no such file or directory\n");
+      }
+}
+
+void cde() {
+  int ret;
+  ret =chdir(getenv("HOME"));
+  if (ret != 0)
+      {
+        printf("no such file or directory\n");
+      } 
+
 }
