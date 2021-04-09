@@ -12,11 +12,15 @@
   void SetEnv(char* input);
   void cd(char* input);
   void cde();
+  void UnSetEnv(char* input);
 %}
 
 
  
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV CD CDE
+
+
+
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -28,6 +32,7 @@
 %type <sval> PRINTENV
 %type <sval> CD
 %type <sval> CDE
+%type <sval> UNSETENV
 
 %union {
   int number;
@@ -50,6 +55,7 @@ STMT:
   | META                    { printf("bison found a Meta Val: %s\n", $1); }
   | EXITTOKEN               { printf("bison found an Exit Token"); exit(1); }
   | SETENV                  { SetEnv( $1 ); }
+  | UNSETENV                { UnSetEnv( $1 ); }
   | PRINTENV                { printenv(); }
   | CD                      { cd( $1 ); }
   | CDE                     { cde(); }
@@ -99,4 +105,10 @@ void cde() {
         printf("no such file or directory\n");
       } 
 
+void UnSetEnv(char* input){
+    char delim[] = " ";
+    char* ptr1 = strtok(input, delim);
+    char* ptr2 = strtok(NULL, "/0");
+    //printf("$1 is %s, $2 is %s", ptr1, ptr2);
+    unsetenv(ptr2);
 }

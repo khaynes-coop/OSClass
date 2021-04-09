@@ -21,6 +21,7 @@ exit|Exit|EXIT  { yylval.sval = strdup(yytext); return EXITTOKEN; }
 hello|hey|hi    { yylval.sval = strdup(yytext); return GREETING; }
 setenv[ ][a-zA-Z0-9]+[ ][a-zA-Z0-9]+          { yylval.sval = strdup(yytext); return SETENV; }
 printenv        { yylval.sval = strdup(yytext); return PRINTENV; }
+unsetenv[ ][a-zA-Z0-9]+                         { yylval.sval = strdup(yytext); return UNSETENV; }
 cd[ ].*      { yylval.sval = strdup(yytext); return CD; }
 cd      { yylval.sval = strdup(yytext); return CDE; }
 
