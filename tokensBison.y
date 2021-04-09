@@ -1,15 +1,15 @@
 %{
   #include <stdio.h>
   #include <stdlib.h>
-  #include <env.h>
-
+  #include <string.h>
 
 //variables
   int yylex();
-  char** environ;
+  extern char** environ;
  //functions
   void yyerror(const char *s);
   void printenv();
+  void SetEnv(char* input);
 %}
 
 
@@ -36,9 +36,7 @@ prog:
     STMTS ;
 STMTS  :
  | STMT NEWLINE STMTS
- | STMT STMT NEWLINE STMTS
- | STMT STMT STMT NEWLINE STMTS
- | NEWLINE STMTS
+ | STMT STMTS
 ;
 STMT:
   | NUMBER                  { printf("bison found a Number: %d\n", $1); }
@@ -47,7 +45,7 @@ STMT:
   | NAME                    { printf("bison found a Name: %s\n", $1); }
   | META                    { printf("bison found a Meta Val: %s\n", $1); }
   | EXITTOKEN               { printf("bison found an Exit Token"); exit(1); }
-  | SETENV WORDS WORDS      { printf("bison found input variables: %s\n %s\n ", $1, $2); setenv( $2, $3, 1); }
+  | SETENV                  { SetEnv( $1 ); }
   | PRINTENV                { printenv(); }
   ;
 
@@ -65,3 +63,12 @@ STMT:
           printf("%s\n",*var);
     }
   }
+
+void SetEnv(char* input){
+    char delim[] = " ";
+    char* ptr1 = strtok(input, delim);
+    char* ptr2 = strtok(NULL, delim);
+    char* ptr3 = strtok(NULL, "/0");
+    //printf("$2 is %s, $3 is %s", ptr2, ptr3);
+    setenv(ptr2, ptr3, 1);
+}
