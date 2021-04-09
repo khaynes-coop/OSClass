@@ -10,11 +10,12 @@
   void yyerror(const char *s);
   void printenv();
   void SetEnv(char* input);
+  void UnSetEnv(char* input);
 %}
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -24,6 +25,7 @@
 %type <sval> EXITTOKEN
 %type <sval> SETENV
 %type <sval> PRINTENV
+%type <sval> UNSETENV
 
 %union {
   int number;
@@ -46,6 +48,7 @@ STMT:
   | META                    { printf("bison found a Meta Val: %s\n", $1); }
   | EXITTOKEN               { printf("bison found an Exit Token"); exit(1); }
   | SETENV                  { SetEnv( $1 ); }
+  | UNSETENV                { UnSetEnv( $1 ); }
   | PRINTENV                { printenv(); }
   ;
 
@@ -71,4 +74,11 @@ void SetEnv(char* input){
     char* ptr3 = strtok(NULL, "/0");
     //printf("$2 is %s, $3 is %s", ptr2, ptr3);
     setenv(ptr2, ptr3, 1);
+}
+void UnSetEnv(char* input){
+    char delim[] = " ";
+    char* ptr1 = strtok(input, delim);
+    char* ptr2 = strtok(NULL, "/0");
+    //printf("$1 is %s, $2 is %s", ptr1, ptr2);
+    unsetenv(ptr2);
 }

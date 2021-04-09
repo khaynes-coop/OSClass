@@ -17,10 +17,11 @@ NOTQUOTE    [^"]
 <expect_string>{NOTQUOTE}*  { yylval.sval = strdup(yytext); return WORDS; }
 <expect_string>{QUOTE}      { BEGIN(INITIAL); yylval.sval = strdup(yytext); return META;}
 
-exit|Exit|EXIT  { yylval.sval = strdup(yytext); return EXITTOKEN; }
-hello|hey|hi    { yylval.sval = strdup(yytext); return GREETING; }
-setenv[ ][a-zA-Z0-9]+[ ][a-zA-Z0-9]+          { yylval.sval = strdup(yytext); return SETENV; }
-printenv        { yylval.sval = strdup(yytext); return PRINTENV; }
+exit|Exit|EXIT                                  { yylval.sval = strdup(yytext); return EXITTOKEN; }
+hello|hey|hi                                    { yylval.sval = strdup(yytext); return GREETING; }
+setenv[ ][a-zA-Z0-9]+[ ][a-zA-Z0-9]+            { yylval.sval = strdup(yytext); return SETENV; }
+printenv                                        { yylval.sval = strdup(yytext); return PRINTENV; }
+unsetenv[ ][a-zA-Z0-9]+                         { yylval.sval = strdup(yytext); return UNSETENV; }
 
 
 [A-Z][a-z]*     { yylval.sval = strdup(yytext); return NAME; }
