@@ -6,6 +6,15 @@
 //variables
   int yylex();
   extern char** environ;
+
+  //Alias Structure
+  typedef struct node {
+      char* alias;
+      char* val;
+      struct node* next;
+  } node_t;
+  node_t* aliasHead; //points to aliases
+
  //functions
   void yyerror(const char *s);
   void printenv();
@@ -13,6 +22,11 @@
   void cd(char* input);
   void cde();
   void UnSetEnv(char* input);
+  void aliasFun(char* toAlias);
+  void printAlias(node_t* head);
+  void assignAlias(node_t** head, char* name, char* word);
+  void removeAlias(node_t** head, char* name);
+  void unAssignAlias(node_t** head, char* name);
 %}
 
 
@@ -20,7 +34,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -32,6 +46,7 @@
 %type <sval> PRINTENV
 %type <sval> CD
 %type <sval> CDE
+%type <sval> ALIAS
 %type <sval> UNSETENV
 
 %union {
@@ -58,6 +73,7 @@ STMT:
   | UNSETENV                { UnSetEnv( $1 ); }
   | PRINTENV                { printenv(); }
   | CD                      { cd( $1 ); }
+  | ALIAS                      { aliasFun( $1 ); }
   | CDE                     { cde(); }
   ;
 
@@ -100,11 +116,10 @@ void cd(char* input) {
 void cde() {
   int ret;
   ret =chdir(getenv("HOME"));
-  if (ret != 0)
-      {
+  if (ret != 0){
         printf("no such file or directory\n");
       } 
-      }
+}
 
 void UnSetEnv(char* input){
     char delim[] = " ";
@@ -112,4 +127,69 @@ void UnSetEnv(char* input){
     char* ptr2 = strtok(NULL, "/0");
     //printf("$1 is %s, $2 is %s", ptr1, ptr2);
     unsetenv(ptr2);
+}
+
+void aliasFun(char* toAlias){
+char delim[] = " ";
+    char* ptr1 = strtok(toAlias, delim);
+    char* ptr2 = strtok(NULL, delim);
+    char* ptr3 = strtok(NULL, "/0");
+    if(ptr2 == NULL || ptr3 == NULL){
+    printAlias( aliasHead);
+    }
+    else if(ptr2 != NULL && ptr3 != NULL){
+    assignAlias(&aliasHead, ptr2, ptr3);
+    }
+    else{
+    printf("too many/few arguments\n");
+    }
+}
+
+void printAlias(node_t* head){
+    node_t* current = head;
+    while (current != NULL){
+        printf("alias %s='%s'\n", current->alias, current->val); //prints out the aliases by looping
+        current = current->next;
+    }
+}
+
+void assignAlias(node_t** head, char* alias, char* val) {
+    node_t* current = *head;
+    node_t* newNode = malloc(sizeof(node_t));
+    newNode->alias = alias;
+    newNode->val = val;
+    newNode->next = NULL;
+    if (current != NULL){
+        while (current->next != NULL && strcmp(current->alias, alias) != 0)
+        {
+            current = current->next;
+        }
+        if (strcmp(current->alias, alias) == 0)
+        {
+            current->val = val;
+            free(newNode);
+            return;
+        }
+        current->next = newNode;
+    }
+    else
+    {
+        *head = newNode;
+    }
+
+}
+
+void removeAlias(node_t** head, char* name) {
+    node_t* current = *head;
+    node_t* prev = NULL;
+    while (1) {
+        if (current == NULL) return -1;
+        if (strcmp(current->alias, name) == 0) break;
+        prev = current;
+        current = current->next;
+    }
+    if (current == *head) *head = current->next;
+    if (prev != NULL) prev->next = current->next;
+    free(current);
+    return 0;
 }
