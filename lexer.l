@@ -29,7 +29,7 @@ alias[ ]*[a-zA-Z0-9]*[ ]*[a-zA-Z0-9]*           { yylval.sval = strdup(yytext); 
 ls[ ][a-zA-Z.]*                                 { yylval.sval = strdup(yytext); return LS;}
 ls                                              { yylval.sval = strdup(yytext); return LSE;}
 unalias[ ][a-zA-Z0-9]+                          { yylval.sval = strdup(yytext); return UNALIAS;}
-
+echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                { yylval.sval = strdup(yytext); return ECHOS;};
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }

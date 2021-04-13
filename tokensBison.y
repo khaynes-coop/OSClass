@@ -36,6 +36,7 @@
   int aliasLoop(node_t** head, char* name, char* word);
   void ls(const char* input);
   void lse();
+  void echo(char* words);
 %}
 
 
@@ -43,7 +44,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHO
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -61,6 +62,7 @@
 %type <sval> RUN
 %type <sval> LS
 %type <sval> LSE
+%type <sval> ECHOS
 
 %union {
   int number;
@@ -91,6 +93,7 @@ STMT:
   | CDE                     { cde(); }
   | LS                      { ls( $1 ); }
   | LSE                     { lse(); }
+  | ECHOS                   { echo( $1 ); }
   ;
 
 
@@ -368,3 +371,10 @@ void lse()
     dir = readdir(dh);
   }
   }
+void echo(char* words){
+char delim[] = "\"";
+char* ptr1 = strtok(words, delim);
+    char* ptr2 = strtok(NULL, delim);
+printf("%s\n", ptr2);
+
+}
