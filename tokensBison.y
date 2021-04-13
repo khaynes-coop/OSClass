@@ -27,6 +27,7 @@
   void assignAlias(node_t** head, char* name, char* word);
   void removeAlias(node_t** head, char* name);
   void unAssignAlias(node_t** head, char* name);
+  void run_command(char* input);
 %}
 
 
@@ -34,7 +35,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -48,6 +49,7 @@
 %type <sval> CDE
 %type <sval> ALIAS
 %type <sval> UNSETENV
+%type <sval> RUN
 
 %union {
   int number;
@@ -75,6 +77,7 @@ STMT:
   | CD                      { cd( $1 ); }
   | ALIAS                      { aliasFun( $1 ); }
   | CDE                     { cde(); }
+  | RUN                     { run_command($1);}
   ;
 
 
@@ -176,7 +179,6 @@ void assignAlias(node_t** head, char* alias, char* val) {
     {
         *head = newNode;
     }
-
 }
 
 void removeAlias(node_t** head, char* name) {
@@ -192,4 +194,53 @@ void removeAlias(node_t** head, char* name) {
     if (prev != NULL) prev->next = current->next;
     free(current);
     return 0;
+}
+
+void run_command(char* input)
+{
+    char* temp = input;
+    char* newInput[256];
+    bool expanded = false;
+      for (int i = 0; i < strlen(temp); i++)
+      {
+        bool terminated = false;
+        char* oldW[256];
+        if (temp[i] = '$' && temp[i+1] = '{')
+        {
+          for(int j = i+2; j < strlen(temp); j++)
+          {
+            if (temp[j] != '}')
+            {
+              strncat(oldW, &temp[j], 1);
+              continue;
+            }
+            terminated = true;
+            break;
+          }
+          if (terminated = true)
+          {
+            if (getenv(oldW) != NULL)
+            {
+              strcat(newInput, getenv(oldW));
+              i += strlen(oldW) + 3;
+            }
+            else
+            {
+              strncat(newInput, '$', 1)
+              strncat(newInput, '{', 1)
+              strcat(newInput, oldW)
+              strncat(newInput, '}', 1)
+              i+= strlen(oldW) + 3;
+            }
+          }
+          else
+          {
+            strncat(newInput, temp[i], 1);
+            continue
+          }
+        }
+        strncat(newInput, temp[i], 1);
+      }
+      printf(newInput);
+      printf("\n");
 }
