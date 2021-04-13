@@ -202,12 +202,11 @@ void run_command(char* input)
 {
     char* temp = input;
     char* newInput[256];
-    bool expanded = false;
       for (int i = 0; i < strlen(temp); i++)
       {
-        bool terminated = false;
+        int terminated = 0;
         char* oldW[256];
-        if (temp[i] = '$' && temp[i+1] = '{')
+        if (temp[i] == '$' && temp[i+1] == '{')
         {
           for(int j = i+2; j < strlen(temp); j++)
           {
@@ -216,10 +215,10 @@ void run_command(char* input)
               strncat(oldW, &temp[j], 1);
               continue;
             }
-            terminated = true;
+            terminated = 1;
             break;
           }
-          if (terminated = true)
+          if (terminated = 1)
           {
             if (getenv(oldW) != NULL)
             {
@@ -228,17 +227,17 @@ void run_command(char* input)
             }
             else
             {
-              strncat(newInput, '$', 1)
-              strncat(newInput, '{', 1)
-              strcat(newInput, oldW)
-              strncat(newInput, '}', 1)
+              strncat(newInput, '$', 1);
+              strncat(newInput, '{', 1);
+              strcat(newInput, oldW);
+              strncat(newInput, '}', 1);
               i+= strlen(oldW) + 3;
             }
           }
           else
           {
             strncat(newInput, temp[i], 1);
-            continue
+            continue;
           }
         }
         strncat(newInput, temp[i], 1);
