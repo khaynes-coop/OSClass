@@ -31,7 +31,7 @@
   void unAssignAlias(node_t** head, char* name);
   char* run_command(char* input);
   int aliasLoop(node_t** head, char* name, char* word);
-  void ls();
+  void ls(char* input);
 %}
 
 
@@ -39,7 +39,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -55,6 +55,7 @@
 %type <sval> UNALIAS
 %type <sval> UNSETENV
 %type <sval> RUN
+%type <sval> LS
 
 %union {
   int number;
@@ -84,6 +85,7 @@ STMT:
   | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
   | CDE                     { cde(); }
   | RUN                     { run_command($1);}
+  | LS                      { ls( $1 ); }
   ;
 
 
@@ -208,7 +210,7 @@ void removeAlias(node_t** head, char* name) {
     return 0;
 }
 
-void run_command(char* input)
+char* run_command(char* input)
 {
     char* temp = input;
     char* newInput;
@@ -286,4 +288,6 @@ node_t* current = *head;
 
 
 }
-void ls()
+void ls(char* input) {
+  return;
+}
