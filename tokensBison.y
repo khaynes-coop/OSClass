@@ -201,11 +201,13 @@ void removeAlias(node_t** head, char* name) {
 void run_command(char* input)
 {
     char* temp = input;
-    char* newInput[256];
+    char* newInput;
+    newInput = malloc(256);
       for (int i = 0; i < strlen(temp); i++)
       {
         int terminated = 0;
-        char* oldW[256];
+        char* oldW;
+        oldW = malloc(256);
         if (temp[i] == '$' && temp[i+1] == '{')
         {
           for(int j = i+2; j < strlen(temp); j++)
@@ -240,7 +242,7 @@ void run_command(char* input)
             continue;
           }
         }
-        strncat(newInput, temp[i], 1);
+        strncat(newInput, &temp[i], 1);
       }
       printf(newInput);
       printf("\n");
