@@ -37,6 +37,7 @@
   void ls(const char* input);
   void lse();
     void echo(char* words, int space);
+    void aliasChecker(node_t** head, char* alias);
 %}
 
 
@@ -80,7 +81,7 @@ STMTS  :
 ;
 STMT:
   | NUMBER                  { printf("bison found a Number: %d\n", $1); }
-  | WORDS                   { printf("bison found a Word: %s\n", $1); }
+  | WORDS                   { aliasChecker( &aliasHead, $1); }
   | GREETING                { printf("bison found a Greeting: %s\n", $1);  }
   | NAME                    { printf("bison found a Name: %s\n", $1); }
   | META                    { printf("bison found a Meta Val: %s\n", $1); }
@@ -384,6 +385,18 @@ char delim[] = " ";
 char* ptr1 = strtok(words, delim);
     char* ptr2 = strtok(NULL, "\0");
     printf("%s\n", ptr2);}
+}
+
+void aliasChecker( node_t** head, char* alias){
+
+node_t* current = *head;
+    node_t* prev = NULL;
+    while (1) {
+        if (current == NULL){ printf("%s\n", alias); return;}//print/execute alias
+        if (strcmp(current->alias, alias) == 0){ aliasChecker(head, current->val); return;}
+        prev = current;
+        current = current->next;
+    }
 
 
 }
