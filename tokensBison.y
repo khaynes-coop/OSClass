@@ -27,11 +27,8 @@
   void assignAlias(node_t** head, char* name, char* word);
   void removeAlias(node_t** head, char* name);
   void unAssignAlias(node_t** head, char* name);
-<<<<<<< Updated upstream
   void run_command(char* input);
-=======
   int aliasLoop(node_t** head, char* name, char* word);
->>>>>>> Stashed changes
 %}
 
 
