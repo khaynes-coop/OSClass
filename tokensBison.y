@@ -4,6 +4,9 @@
   #include <string.h>
   #include <dirent.h>
   #include <errno.h>
+  #include <unistd.h>
+  #include <limits.h>
+  #include <libgen.h>
 
 //variables
   int yylex();
@@ -31,7 +34,8 @@
   void unAssignAlias(node_t** head, char* name);
   char* run_command(char* input);
   int aliasLoop(node_t** head, char* name, char* word);
-  void ls(char* input);
+  void ls(const char* input);
+  void lse();
 %}
 
 
@@ -39,7 +43,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHO
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -56,6 +60,7 @@
 %type <sval> UNSETENV
 %type <sval> RUN
 %type <sval> LS
+%type <sval> LSE
 
 %union {
   int number;
@@ -84,8 +89,8 @@ STMT:
   | ALIAS                   { aliasFun( $1 ); }
   | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
   | CDE                     { cde(); }
-  | RUN                     { run_command($1);}
   | LS                      { ls( $1 ); }
+  | LSE                     { lse(); }
   ;
 
 
@@ -288,6 +293,78 @@ node_t* current = *head;
 
 
 }
-void ls(char* input) {
-  return;
+void ls(const char* input) {
+  char* newInput = run_command(input);
+  char delim[] = " ";
+    char* ptr1 = strtok(newInput, delim);
+    char* ptr2 = strtok(NULL, "/0");
+  struct dirent *dir;
+  DIR *dh;
+  if (strcmp(ptr2,".") == 0)
+  {
+    char* cwd;
+    cwd = malloc(256);
+    cwd = getcwd(cwd, 256);
+    cwd = basename(cwd);
+    chdir("..");
+    dh = opendir(cwd);
+    chdir(cwd);
+  }
+  else if (strcmp(ptr2,"..") == 0)
+  {
+    char* innercwd;
+    innercwd = malloc(256);
+    innercwd = getcwd(innercwd, 256);
+    innercwd = basename(innercwd);
+    chdir("..");
+    char* cwd;
+    cwd = malloc(256);
+    cwd = getcwd(cwd, 256);
+    cwd = basename(cwd);
+    chdir("..");
+    dh = opendir(cwd);
+    chdir(cwd);
+    chdir(innercwd);
+  }
+  else
+  {
+    dh = opendir(ptr2);
+  }
+  if (!dh)
+  {
+    if (errno = ENOENT)
+    {
+      printf("Directory doesn't exist\n");
+    }
+    else
+    {
+      printf("Unable to read directory\n");
+    }
+    return;
+  }
+  dir = readdir(dh);
+ while (dir != NULL)
+  {
+    printf("%s\n", dir->d_name);
+    dir = readdir(dh);
+  }
 }
+
+void lse()
+{
+  struct dirent *dir;
+  DIR *dh;
+  char* cwd;
+    cwd = malloc(256);
+    cwd = getcwd(cwd, 256);
+    cwd = basename(cwd);
+    chdir("..");
+    dh = opendir(cwd);
+    chdir(cwd);
+    dir = readdir(dh);
+ while (dir != NULL)
+  {
+    printf("%s\n", dir->d_name);
+    dir = readdir(dh);
+  }
+  }

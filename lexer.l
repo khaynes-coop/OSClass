@@ -25,9 +25,10 @@ printenv                                        { yylval.sval = strdup(yytext); 
 unsetenv[ ][a-zA-Z0-9]+                         { yylval.sval = strdup(yytext); return UNSETENV; }
 cd[ ].*                                         { yylval.sval = strdup(yytext); return CD; }
 cd                                              { yylval.sval = strdup(yytext); return CDE; }
-alias[ ]*[a-zA-Z0-9]*[ ]*[a-zA-Z0-9]*           { yylval.sval = strdup(yytext); return ALIAS;};
-run[ ].*                                        { yylval.sval = strdup(yytext); return RUN;};
-unalias[ ][a-zA-Z0-9]+                          { yylval.sval = strdup(yytext); return UNALIAS;};
+alias[ ]*[a-zA-Z0-9]*[ ]*[a-zA-Z0-9]*           { yylval.sval = strdup(yytext); return ALIAS;}
+ls[ ][a-zA-Z.]*                                 { yylval.sval = strdup(yytext); return LS;}
+ls                                              { yylval.sval = strdup(yytext); return LSE;}
+unalias[ ][a-zA-Z0-9]+                          { yylval.sval = strdup(yytext); return UNALIAS;}
 
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
