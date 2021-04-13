@@ -99,8 +99,9 @@ STMT:
   }
 
 void SetEnv(char* input){
+    char* expInput = run_command(input);
     char delim[] = " ";
-    char* ptr1 = strtok(input, delim);
+    char* ptr1 = strtok(expInput, delim);
     char* ptr2 = strtok(NULL, delim);
     char* ptr3 = strtok(NULL, "/0");
     //printf("$2 is %s, $3 is %s", ptr2, ptr3);
@@ -108,9 +109,10 @@ void SetEnv(char* input){
 }
 
 void cd(char* input) {
+  char* expInput = run_command(input);
   int ret;
   char delim[] = " ";
-    char* ptr1 = strtok(input, delim);
+    char* ptr1 = strtok(expInput, delim);
     char* ptr2 = strtok(NULL, "/0");
       ret = chdir(ptr2);
       if (ret != 0)
@@ -128,6 +130,7 @@ void cde() {
 }
 
 void UnSetEnv(char* input){
+    char* expInput = run_command(expInput);
     char delim[] = " ";
     char* ptr1 = strtok(input, delim);
     char* ptr2 = strtok(NULL, "/0");
@@ -136,8 +139,9 @@ void UnSetEnv(char* input){
 }
 
 void aliasFun(char* toAlias){
+  char* expInput = run_command(toAlias);
 char delim[] = " ";
-    char* ptr1 = strtok(toAlias, delim);
+    char* ptr1 = strtok(expInput, delim);
     char* ptr2 = strtok(NULL, delim);
     char* ptr3 = strtok(NULL, "/0");
     if(ptr2 == NULL && ptr3 == NULL){
@@ -255,6 +259,7 @@ void unAssignAlias(node_t** head, char* name){
 char delim[] = " ";
     char* ptr1 = strtok(name, delim);
     char* ptr2 = strtok(NULL, "/0");
+    ptr2 = run_command(ptr2);
     if(ptr2 != NULL){removeAlias( &aliasHead, ptr2);}
     else{
     printf("Too many/few arguments");}
