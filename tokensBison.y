@@ -27,7 +27,11 @@
   void assignAlias(node_t** head, char* name, char* word);
   void removeAlias(node_t** head, char* name);
   void unAssignAlias(node_t** head, char* name);
+<<<<<<< Updated upstream
   void run_command(char* input);
+=======
+  int aliasLoop(node_t** head, char* name, char* word);
+>>>>>>> Stashed changes
 %}
 
 
@@ -143,7 +147,9 @@ char delim[] = " ";
     printAlias( aliasHead);
     }
     else if(ptr2 != NULL && ptr3 != NULL){
-    assignAlias(&aliasHead, ptr2, ptr3);
+    if(aliasLoop(&aliasHead, ptr2, ptr3) == 0){
+    assignAlias(&aliasHead, ptr2, ptr3);}
+    else{printf("Name may cause an infinite loop\n");}
     }
     else{
     printf("too many/few arguments\n");
@@ -253,4 +259,24 @@ char delim[] = " ";
     if(ptr2 != NULL){removeAlias( &aliasHead, ptr2);}
     else{
     printf("Too many/few arguments");}
+}
+
+int aliasLoop(node_t** head, char* name, char* word){
+node_t* current = *head;
+    node_t* prev = NULL;
+    while (1) {
+        if (current == NULL){ return 0;}
+
+        if (strcmp(current->alias, word) == 0){
+        if(strcmp(current->val, name) == 0 ){
+        return -1;}
+        else{
+        return aliasLoop(head, name, current->val); }
+
+        }
+        prev = current;
+        current = current->next;
+    }
+
+
 }
