@@ -35,7 +35,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -48,6 +48,7 @@
 %type <sval> CD
 %type <sval> CDE
 %type <sval> ALIAS
+%type <sval> UNALIAS
 %type <sval> UNSETENV
 %type <sval> RUN
 
@@ -70,12 +71,13 @@ STMT:
   | GREETING                { printf("bison found a Greeting: %s\n", $1);  }
   | NAME                    { printf("bison found a Name: %s\n", $1); }
   | META                    { printf("bison found a Meta Val: %s\n", $1); }
-  | EXITTOKEN               { printf("bison found an Exit Token"); exit(1); }
+  | EXITTOKEN               { printf("bison found an Exit Token\n"); exit(1); }
   | SETENV                  { SetEnv( $1 ); }
   | UNSETENV                { UnSetEnv( $1 ); }
   | PRINTENV                { printenv(); }
   | CD                      { cd( $1 ); }
-  | ALIAS                      { aliasFun( $1 ); }
+  | ALIAS                   { aliasFun( $1 ); }
+  | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
   | CDE                     { cde(); }
   | RUN                     { run_command($1);}
   ;
@@ -137,7 +139,7 @@ char delim[] = " ";
     char* ptr1 = strtok(toAlias, delim);
     char* ptr2 = strtok(NULL, delim);
     char* ptr3 = strtok(NULL, "/0");
-    if(ptr2 == NULL || ptr3 == NULL){
+    if(ptr2 == NULL && ptr3 == NULL){
     printAlias( aliasHead);
     }
     else if(ptr2 != NULL && ptr3 != NULL){
@@ -185,7 +187,7 @@ void removeAlias(node_t** head, char* name) {
     node_t* current = *head;
     node_t* prev = NULL;
     while (1) {
-        if (current == NULL) return -1;
+        if (current == NULL){ printf("%s is not an alias\n", name); return;}
         if (strcmp(current->alias, name) == 0) break;
         prev = current;
         current = current->next;
@@ -243,4 +245,13 @@ void run_command(char* input)
       }
       printf(newInput);
       printf("\n");
+}
+
+void unAssignAlias(node_t** head, char* name){
+char delim[] = " ";
+    char* ptr1 = strtok(name, delim);
+    char* ptr2 = strtok(NULL, "/0");
+    if(ptr2 != NULL){removeAlias( &aliasHead, ptr2);}
+    else{
+    printf("Too many/few arguments");}
 }
