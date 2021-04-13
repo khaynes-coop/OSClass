@@ -32,7 +32,7 @@
   char* run_command(char* input);
   int aliasLoop(node_t** head, char* name, char* word);
   void ls(char* input);
-  void echo(char* words);
+  void echo(char* words, int space);
 %}
 
 
@@ -40,7 +40,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS ECHOS
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS ECHOS ECHOA
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -58,6 +58,7 @@
 %type <sval> RUN
 %type <sval> LS
 %type <sval> ECHOS
+%type <sval> ECHOA
 
 %union {
   int number;
@@ -88,7 +89,8 @@ STMT:
   | CDE                     { cde(); }
   | RUN                     { run_command($1);}
   | LS                      { ls( $1 ); }
-  | ECHOS                   { echo( $1 ); }
+  | ECHOS                   { echo( $1 , 0); }
+  | ECHOA                   { echo( $1 , 1); }
   ;
 
 
@@ -295,10 +297,17 @@ void ls(char* input) {
   return;
 }
 
-void echo(char* words){
-char delim[] = "\"";
+void echo(char* words, int space){
+
+if(space == 0){ char delim[] = "\"";
 char* ptr1 = strtok(words, delim);
     char* ptr2 = strtok(NULL, delim);
-printf("%s\n", ptr2);
+    printf("%s\n", ptr2);}
+else if (space == 1){
+char delim[] = " ";
+char* ptr1 = strtok(words, delim);
+    char* ptr2 = strtok(NULL, "\0");
+    printf("%s\n", ptr2);}
+
 
 }

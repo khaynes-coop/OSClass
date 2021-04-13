@@ -7,6 +7,7 @@ DIGIT       [0-9]
 META        [\[\]{},:\"]
 QUOTE       ["]
 NOTQUOTE    [^"]
+NOTECHOS    [^"^\n]
 PIPE        [|]
 %x          expect_string
 %%
@@ -29,6 +30,7 @@ alias[ ]*[a-zA-Z0-9]*[ ]*[a-zA-Z0-9]*           { yylval.sval = strdup(yytext); 
 run[ ].*                                        { yylval.sval = strdup(yytext); return RUN;};
 unalias[ ][a-zA-Z0-9]+                          { yylval.sval = strdup(yytext); return UNALIAS;};
 echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                { yylval.sval = strdup(yytext); return ECHOS;};
+echo[ ]{NOTECHOS}*                              { yylval.sval = strdup(yytext); return ECHOA;};
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }
