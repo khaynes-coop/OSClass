@@ -2,6 +2,8 @@
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
+  #include <dirent.h>
+  #include <errno.h>
 
 //variables
   int yylex();
@@ -27,8 +29,9 @@
   void assignAlias(node_t** head, char* name, char* word);
   void removeAlias(node_t** head, char* name);
   void unAssignAlias(node_t** head, char* name);
-  void run_command(char* input);
+  char* run_command(char* input);
   int aliasLoop(node_t** head, char* name, char* word);
+  void ls();
 %}
 
 
@@ -251,8 +254,7 @@ void run_command(char* input)
         }
         strncat(newInput, &temp[i], 1);
       }
-      printf(newInput);
-      printf("\n");
+      return newInput;
 }
 
 void unAssignAlias(node_t** head, char* name){
@@ -284,3 +286,4 @@ node_t* current = *head;
 
 
 }
+void ls()
