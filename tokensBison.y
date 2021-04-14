@@ -39,6 +39,7 @@
   void echo(char* words, int space);
   void aliasChecker(node_t** head, char* alias);
   void catFileOpenReadClose(char* file);
+  void catOpenReadClose(char* file, char* file2);
   void catDecode(char* catFile);
   void catNew(char* catFile);
 %}
@@ -432,6 +433,9 @@ char* ptr1 = strtok(catFile, delim);
     if(ptr2 != NULL && ptr3 == NULL){
     catFileOpenReadClose(ptr2);
     }
+    if(ptr2 != NULL && ptr3 != NULL){
+        catOpenReadClose(ptr2, ptr3);
+        }
 }
 
 void catNew(char* catFile){
@@ -447,5 +451,33 @@ void catNew(char* catFile){
 
     if((filePointer = fopen(ptr2, "r") ) != NULL){ printf("Successfully created file %s\n", ptr2);}
     else{ printf("Did not create file %s\n", ptr2);}
+
+}
+
+void catOpenReadClose(char* file, char* file2){
+
+FILE *filePointer;
+
+if((filePointer = fopen(file, "r") )== NULL){
+printf("no such filename %s\n", file);
+return;
+}
+else{
+int c;
+while ((c = getc(filePointer)) != EOF)
+        putchar(c);}
+fclose(filePointer);
+
+if((filePointer = fopen(file2, "r") )== NULL){
+printf("no such filename %s\n", file2);
+return;
+}
+else{
+int c;
+while ((c = getc(filePointer)) != EOF)
+        putchar(c);}
+fclose(filePointer);
+printf("\n");
+
 
 }
