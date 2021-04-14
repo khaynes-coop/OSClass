@@ -32,7 +32,9 @@ ls                                              { yylval.sval = strdup(yytext); 
 unalias[ ][a-zA-Z0-9]+                          { yylval.sval = strdup(yytext); return UNALIAS;}
 echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                { yylval.sval = strdup(yytext); return ECHOS;};
 echo[ ]{NOTECHOS}*                              { yylval.sval = strdup(yytext); return ECHOA;};
-cat[ ]{NOTECHOS}+[ ]*{NOTECHOS}*                { yylval.sval = strdup(yytext); return CAT;};
+cat[ ]>[a-zA-Z0-9]+.txt                       { yylval.sval = strdup(yytext); return CATNEW;};
+cat[ ][a-zA-Z0-9]+.txt[ ]*{NOTECHOS}*                { yylval.sval = strdup(yytext); return CAT;};
+
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }

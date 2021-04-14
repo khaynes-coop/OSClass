@@ -40,6 +40,7 @@
   void aliasChecker(node_t** head, char* alias);
   void catFileOpenReadClose(char* file);
   void catDecode(char* catFile);
+  void catNew(char* catFile);
 %}
 
 
@@ -47,7 +48,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -68,6 +69,7 @@
 %type <sval> ECHOS
 %type <sval> ECHOA
 %type <sval> CAT
+%type <sval> CATNEW
 
 %union {
   int number;
@@ -101,6 +103,7 @@ STMT:
   | ECHOS                   { echo( $1 , 0); }
   | ECHOA                   { echo( $1 , 1); }
   | CAT                     { catDecode( $1 ); }
+  | CATNEW                  { catNew( $1 ); }
   ;
 
 
@@ -425,8 +428,24 @@ char* ptr1 = strtok(catFile, delim);
     char* ptr2 = strtok(NULL, delim);
     char* ptr3 = strtok(NULL, "/0");
 
-    //printf("p1 is %s, p2 is %s, p3 is %s", ptr1, ptr2, ptr3);
+
     if(ptr2 != NULL && ptr3 == NULL){
     catFileOpenReadClose(ptr2);
     }
+}
+
+void catNew(char* catFile){
+    char delim[] = " ";
+    //printf("%s", catFile);
+    char* ptr1 = strtok(catFile, delim);
+    char* ptr2 = strtok(NULL, ">");
+
+
+    FILE *filePointer;
+    filePointer = fopen(ptr2, "w");
+    fclose(filePointer);
+
+    if((filePointer = fopen(ptr2, "r") ) != NULL){ printf("Successfully created file %s\n", ptr2);}
+    else{ printf("Did not create file %s\n", ptr2);}
+
 }
