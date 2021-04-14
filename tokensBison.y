@@ -42,7 +42,7 @@
   void catOpenReadClose(char* file, char* file2);
   void catDecode(char* catFile);
   void catNew(char* catFile);
-  void catApp(char* catFile);
+  void catApp(char* catFile, int open);
 %}
 
 
@@ -50,7 +50,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -71,6 +71,7 @@
 %type <sval> ECHOS
 %type <sval> ECHOA
 %type <sval> CAT
+%type <sval> CATW
 %type <sval> CATNEW
 %type <sval> CATAPP
 
@@ -107,7 +108,8 @@ STMT:
   | ECHOA                   { echo( $1 , 1); }
   | CAT                     { catDecode( $1 ); }
   | CATNEW                  { catNew( $1 ); }
-  | CATAPP                  { catApp( $1 ); }
+  | CATAPP                  { catApp( $1, 0 ); }
+  | CATW                    { catApp( $1, 1 ); }
   ;
 
 
@@ -485,16 +487,17 @@ printf("\n");
 
 }
 
-void catApp(char* catFile){
+void catApp(char* catFile, int open){
     char delim[] = " ";
     //printf("%s\n", catFile);
     char* ptr1 = strtok(catFile, delim);
     char* ptr2 = strtok(NULL, delim);
     char* ignorw = strtok(NULL, delim);
     char* ptr3 = strtok(NULL, "\0");
-
+char* write;
 //open f2 in write, f1 in read, write each char of f1 to f2
-
+if(open == 0){write = "a";}
+else{write = "w";}
 
 FILE *f1;
 FILE *f2;
@@ -504,7 +507,7 @@ fclose(f1);
 return;
 }
 else{
-if((f2 = fopen(ptr3, "a") ) != NULL){
+if((f2 = fopen(ptr3, write) ) != NULL){
     int c;
     while ((c = getc(f1)) != EOF){
         fputc(c, f2);}
