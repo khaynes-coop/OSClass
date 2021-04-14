@@ -36,8 +36,10 @@
   int aliasLoop(node_t** head, char* name, char* word);
   void ls(const char* input);
   void lse();
-    void echo(char* words, int space);
-    void aliasChecker(node_t** head, char* alias);
+  void echo(char* words, int space);
+  void aliasChecker(node_t** head, char* alias);
+  void catFileOpenReadClose(char* file);
+  void catDecode(char* catFile);
 %}
 
 
@@ -45,7 +47,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -65,6 +67,7 @@
 %type <sval> LSE
 %type <sval> ECHOS
 %type <sval> ECHOA
+%type <sval> CAT
 
 %union {
   int number;
@@ -97,6 +100,7 @@ STMT:
   | LSE                     { lse(); }
   | ECHOS                   { echo( $1 , 0); }
   | ECHOA                   { echo( $1 , 1); }
+  | CAT                     { catDecode( $1 ); }
   ;
 
 
@@ -399,4 +403,30 @@ node_t* current = *head;
     }
 
 
+}
+
+void catFileOpenReadClose(char* file){
+FILE *filePointer;
+
+if((filePointer = fopen(file, "r") )== NULL){
+printf("no such filename\n");
+return;
+}
+int c;
+while ((c = getc(filePointer)) != EOF)
+        putchar(c);
+fclose(filePointer);
+printf("\n");
+}
+
+void catDecode(char* catFile){
+char delim[] = " ";
+char* ptr1 = strtok(catFile, delim);
+    char* ptr2 = strtok(NULL, delim);
+    char* ptr3 = strtok(NULL, "/0");
+
+    //printf("p1 is %s, p2 is %s, p3 is %s", ptr1, ptr2, ptr3);
+    if(ptr2 != NULL && ptr3 == NULL){
+    catFileOpenReadClose(ptr2);
+    }
 }
