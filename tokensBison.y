@@ -7,6 +7,7 @@
   #include <unistd.h>
   #include <limits.h>
   #include <libgen.h>
+  #include <time.h>
 
 //variables
   int yylex();
@@ -49,6 +50,7 @@
   char** sortStrings(char* input);
     unsigned long int fileLineCount(char* file);
     void sortfile(char **array, int linecount);
+  char* date();
 %}
 
 
@@ -56,7 +58,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT DATE
 %type <number> NUMBER
 %type <sval> SORT
 %type <sval> NEWLINE
@@ -88,6 +90,7 @@
 %type <sval> CATAPP
 %type <sval> PWD
 %type <sval> WC
+%type <sval> DATE
 
 %union {
   int number;
@@ -132,6 +135,7 @@ STMT:
   | PWD                     { pwd(); }
   | WC                      { wc( $1 );}
   | SORT                    { char** print = sortStrings( $1 ); int j = atoi(print[0]); if (j > 0){j++; for(int c = 1; c < j; c++) printf("%s", print[c]); printf("\n");} else printf("%s\n",  print[0]);}
+  | DATE                    { date(); }
   ;
 
 
@@ -922,4 +926,10 @@ void sortfile(char **array, int linecount){
             }
         }
     }
+}
+
+char* date()
+{
+  time_t t = time(NULL);
+  return(asctime(localtime(&t)));
 }

@@ -46,6 +46,7 @@ cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytex
 pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
 wc([ ].*)+                                          { yylval.sval = strdup(yytext); return WC;};
 sort[ ]<[ ][a-zA-Z0-9]+.txt[ ]*>*[ ]*[a-zA-Z0-9]*{TXT}* { yylval.sval = strdup(yytext); return SORT;}
+date                                                { yylval.sval = strdup(yytext); return DATE;}
 
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
