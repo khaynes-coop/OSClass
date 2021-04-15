@@ -36,7 +36,7 @@
   int aliasLoop(node_t** head, char* name, char* word);
   char* ls(const char* input);
   char* lse();
-  void echo(char* words, int space);
+  char* echo(char* words, int space);
   void aliasChecker(node_t** head, char* alias);
   void catFileOpenReadClose(char* file);
   void catOpenReadClose(char* file, char* file2);
@@ -47,8 +47,10 @@
   char* pwd();
   char* wc(char* input);
   char** sortStrings(char* input);
-    unsigned long int fileLineCount(char* file);
-    void sortfile(char **array, int linecount);
+      unsigned long int fileLineCount(char* file);
+      void sortfile(char **array, int linecount);
+    char* sortNotFile(char* input);
+    char* pipeFunction(char* pipesBars);
 %}
 
 
@@ -123,8 +125,8 @@ STMT:
   | CDE                     { cde(); }
   | LS                      { ls( $1 ); }
   | LSE                     { lse(); }
-  | ECHOS                   { echo( $1 , 0); }
-  | ECHOA                   { echo( $1 , 1); }
+  | ECHOS                   { char* p = echo( $1 , 0); printf("%s", p);}
+  | ECHOA                   { char* p = echo( $1 , 1); printf("%s", p); }
   | CAT                     { catDecode( $1 ); }
   | CATNEW                  { catNew( $1 ); }
   | CATAPP                  { catApp( $1, 0 ); }
@@ -473,20 +475,20 @@ char* lse()
     dir = readdir(dh);
   }
   }
-void echo(char* words, int space){
+char* echo(char* words, int space){
 
 if(space == 0){ char delim[] = "\"";
 char* ptr1 = strtok(words, delim);
     char* ptr2 = strtok(NULL, delim);
     char* ptr3 = run_command(ptr2);
-    printf("%s\n", ptr3);}
+    return ptr3;}
 
 else if (space == 1){
 char delim[] = " ";
 char* ptr1 = strtok(words, delim);
     char* ptr2 = strtok(NULL, "\0");
     char* ptr3 = run_command(ptr2);
-        printf("%s\n", ptr3);}
+        return ptr3;}
 }
 
 void aliasChecker( node_t** head, char* alias){
@@ -922,4 +924,64 @@ void sortfile(char **array, int linecount){
             }
         }
     }
+}
+
+char* sortNotFile(char* input){
+    char* tempstr = calloc(strlen(input)+1, sizeof(char));
+    char* delim = "\n";
+    unsigned long int numNewLine = 1;
+    char* token = strtok(tempstr, delim);
+    while(token != NULL){
+    numNewLine++;
+    token = strtok(NULL, delim);
+    }
+
+    char **array = (char**)malloc(numNewLine * sizeof(char*));
+    char* singleline;
+         singleline = strtok(input, delim);;
+    for(int i = 0; i < numNewLine; i++){
+    array[i] = singleline;
+    singleline = strtok(NULL, delim);
+    }
+
+//sortfile(array, linecount);
+
+        for(int i = 0; i < numNewLine; i++){
+        printf("%d: %s", numNewLine, array[i]);
+        }
+
+        return singleline;
+
+}
+
+char* pipeFunction(char* pipesBars){
+char tempstr[strlen(pipesBars) + 1];
+strncpy(tempstr, pipesBars, sizeof(tempstr));
+    char* delim = "|";
+    unsigned long int numBar = 0;
+    char* token = strtok(tempstr, delim);
+
+    while(token != NULL){
+    numBar= numBar + 1;
+                token = strtok(NULL, delim);}
+
+char **array = (char**)malloc(numBar * sizeof(char*));
+    char* singleline;
+     singleline = strtok(pipesBars, delim);
+    for(int i = 0; i < numBar; i++){
+    array[i] = singleline;
+    singleline = strtok(NULL, delim);
+    }
+//array[1]+ has whitespace, it gone
+    for(int i = 1; i < numBar; i++){
+    array[i]++;
+            //printf("%lu: %s\n", numBar, array[i]);
+            }
+for(int i = 1; i < numBar; i++){
+
+
+
+}
+
+
 }

@@ -10,6 +10,8 @@ NOTQUOTE    [^"]
 NOTECHOS    [^"^\n]
 NOTENV    [^"^\n^ ]
 PIPE        [|]
+NOTNEWLINE  [^\n^|]
+NOTNEWLINE2  [^\n]
 TXT         [.txt]
 %x          expect_string
 %%
@@ -46,6 +48,7 @@ cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytex
 pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
 wc([ ].*)+                                          { yylval.sval = strdup(yytext); return WC;};
 sort[ ]<[ ][a-zA-Z0-9]+.txt[ ]*>*[ ]*[a-zA-Z0-9]*{TXT}* { yylval.sval = strdup(yytext); return SORT;}
+{NOTNEWLINE}+[ ]{PIPE}[ ]{NOTNEWLINE}+[ ]*{PIPE}*{NOTNEWLINE2}* { yylval.sval = strdup(yytext); return PIPPET;}
 
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
