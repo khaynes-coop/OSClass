@@ -15,11 +15,11 @@ TXT         [.txt]
 %%
 
 
-"\n"                                            { return NEWLINE; }
-[ \t\r\n]                                       {}
-{QUOTE}                                         { BEGIN(expect_string); yylval.sval = strdup(yytext); return META; }
-<expect_string>{NOTQUOTE}*                      { yylval.sval = strdup(yytext); return WORDS; }
-<expect_string>{QUOTE}                          { BEGIN(INITIAL); yylval.sval = strdup(yytext); return META;}
+"\n"                                                    { return NEWLINE; }
+[ \t\r\n]                                               {}
+{QUOTE}                                                 { BEGIN(expect_string); yylval.sval = strdup(yytext); return META; }
+<expect_string>{NOTQUOTE}*                              { yylval.sval = strdup(yytext); return WORDS; }
+<expect_string>{QUOTE}                                  { BEGIN(INITIAL); yylval.sval = strdup(yytext); return META;}
 
 exit|Exit|EXIT|bye                                  { yylval.sval = strdup(yytext); return EXITTOKEN; }
 hello|hey|hi                                        { yylval.sval = strdup(yytext); return GREETING; }
@@ -45,6 +45,7 @@ cat[ ][a-zA-Z0-9]+.txt[ ]>[ ][a-zA-Z0-9]+.txt       { yylval.sval = strdup(yytex
 cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytext); return CAT;};
 pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
 wc([ ].*)+                                          { yylval.sval = strdup(yytext); return WC;};
+sort[ ]<[ ][a-zA-Z0-9]+.txt[ ]*>*[ ]*[a-zA-Z0-9]*{TXT}* { yylval.sval = strdup(yytext); return SORT;}
 
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
