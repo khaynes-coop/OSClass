@@ -45,6 +45,7 @@
   void catApp(char* catFile, int open);
   void aliasFunctionsPrint(char* aliasString);
   void pwd();
+  void wc(char* input);
 %}
 
 
@@ -52,7 +53,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -82,6 +83,7 @@
 %type <sval> CATNEW
 %type <sval> CATAPP
 %type <sval> PWD
+%type <sval> WC
 
 %union {
   int number;
@@ -124,6 +126,7 @@ STMT:
   | CATAPP                  { catApp( $1, 0 ); }
   | CATW                    { catApp( $1, 1 ); }
   | PWD                     { pwd(); }
+  | WC                      { wc( $1 );}
   ;
 
 
@@ -601,4 +604,94 @@ void pwd() {
     cwd = getcwd(cwd, 256);
     printf(cwd);
     printf("\n");
+}
+
+void wc(char* input) {
+  char* newInput = run_command(input);
+  int lflag = 0, wflag = 0, cflag = 0;
+  int totlines = 0, totwords = 0, totchars = 0, fcount = 0;
+  char delim[] = " ";
+  char* ptr1 = strtok(newInput, delim);
+  ptr1 = strtok(NULL, delim);
+  while (ptr1 != NULL)
+  {
+    if (ptr1[0] == '-')
+    {
+      for (int i = 1; i < strlen(ptr1); i++)
+      { 
+        if (ptr1[i] == 'l')
+          lflag = 1;
+        else if (ptr1[i] == 'w')
+          wflag = 1;
+        else if (ptr1[i] == 'c')
+          cflag = 1;
+      }
+    }
+    else
+    {
+      fcount++;
+      FILE *file;
+      char ch;
+      int lines =  0, words = 1, chars = 0, word = 0;
+      if ((file = fopen(ptr1, "r")) == NULL)
+      {
+        printf("Error no such filename %s\n", ptr1);
+      }
+      else
+      {
+        while ((ch = fgetc(file)) != EOF)
+        {
+          chars++;
+          if (ch == ' ' || ch == '\t' || ch == '\0' || ch == '\n')
+          {
+            if (word == 1)
+            {
+              word = 0;
+              words++;
+            } 
+          }
+          if (ch == '\0' || ch == '\n')
+            lines++;
+          else
+            word = 1;
+        }
+      if (lflag == 1 && wflag == 0 && cflag == 0)
+        printf("%d %s\n", lines, ptr1);
+      else if (lflag == 1 && wflag == 1 && cflag == 0)
+        printf("%d %d %s\n", lines, words, ptr1);
+      else if (lflag == 1 && wflag == 0 && cflag == 1)
+        printf("%d %d %s\n", lines, chars, ptr1);
+      else if (lflag == 0 && wflag == 1 && cflag == 0)
+        printf("%d %s\n", words, ptr1);
+      else if (lflag == 0 && wflag == 1 && cflag == 1)
+        printf("%d %d %s\n", words, chars, ptr1);
+      else if (lflag == 0 && wflag == 0 && cflag == 1)
+        printf("%d %s\n", chars, ptr1);
+      else
+        printf("%d %d %d %s\n", lines, words, chars, ptr1);
+      totlines += lines;
+      totwords += words;
+      totchars += chars;
+      fclose(file);
+      }
+    }
+    ptr1 = strtok(NULL, delim);
+  }
+  if (fcount > 1)
+  {
+    if (lflag == 1 && wflag == 0 && cflag == 0)
+        printf("%d total\n", totlines, ptr1);
+      else if (lflag == 1 && wflag == 1 && cflag == 0)
+        printf("%d %d total\n", totlines, totwords, ptr1);
+      else if (lflag == 1 && wflag == 0 && cflag == 1)
+        printf("%d %d total\n", totlines, totchars, ptr1);
+      else if (lflag == 0 && wflag == 1 && cflag == 0)
+        printf("%d total\n", totwords, ptr1);
+      else if (lflag == 0 && wflag == 1 && cflag == 1)
+        printf("%d %d total\n", totwords, totchars, ptr1);
+      else if (lflag == 0 && wflag == 0 && cflag == 1)
+        printf("%d total\n", totchars, ptr1);
+      else
+        printf("%d %d %d total\n", totlines, totwords, totchars, ptr1);
+  }
 }
