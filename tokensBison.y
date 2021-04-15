@@ -60,9 +60,14 @@
 
 
 
+<<<<<<< Updated upstream
 %token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT DATE
+=======
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT PIPPET
+>>>>>>> Stashed changes
 %type <number> NUMBER
 %type <sval> SORT
+%type <sval> PIPPET
 %type <sval> NEWLINE
 %type <sval> WORDS
 %type <sval> GREETING
@@ -987,8 +992,11 @@ char **array = (char**)malloc(numBar * sizeof(char*));
     array[i]++;
             //printf("%lu: %s\n", numBar, array[i]);
             }
-for(int i = 1; i < numBar; i++){
 
+   char* currVal;
+   char* prevVal;
+for(int i = 0; i < numBar; i++){
+if(strncmp("echo", array[i], 4))
 
 
 }
