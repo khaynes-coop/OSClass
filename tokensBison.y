@@ -23,11 +23,11 @@
  //functions
   void yyerror(const char *s);
   void printenv();
-  void SetEnv(char* input);
+  void SetEnv(char* input, int pass);
   void cd(char* input);
   void cde();
-  void UnSetEnv(char* input);
-  void aliasFun(char* toAlias);
+  void UnSetEnv(char* input, int pass);
+  void aliasFun(char* toAlias, int pass);
   void printAlias(node_t* head);
   void assignAlias(node_t** head, char* name, char* word);
   void removeAlias(node_t** head, char* name);
@@ -43,6 +43,7 @@
   void catDecode(char* catFile);
   void catNew(char* catFile);
   void catApp(char* catFile, int open);
+  void aliasFunctionsPrint(char* aliasString);
 %}
 
 
@@ -50,7 +51,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV PRINTENV UNSETENV CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -59,12 +60,17 @@
 %type <sval> META
 %type <sval> EXITTOKEN
 %type <sval> SETENV
+%type <sval> SETENVQ
 %type <sval> PRINTENV
 %type <sval> CD
 %type <sval> CDE
 %type <sval> ALIAS
+%type <sval> ALIASA
+%type <sval> ALIASP
+%type <sval> ALIASC
 %type <sval> UNALIAS
 %type <sval> UNSETENV
+%type <sval> UNSETENVP
 %type <sval> RUN
 %type <sval> LS
 %type <sval> LSE
@@ -95,11 +101,16 @@ STMT:
   | NAME                    { printf("bison found a Name: %s\n", $1); }
   | META                    { printf("bison found a Meta Val: %s\n", $1); }
   | EXITTOKEN               { printf("bison found an Exit Token\n"); exit(1); }
-  | SETENV                  { SetEnv( $1 ); }
-  | UNSETENV                { UnSetEnv( $1 ); }
+  | SETENV                  { SetEnv( $1, 0 ); }
+  | SETENVQ                 { SetEnv( $1, 1 ); }
+  | UNSETENV                { UnSetEnv( $1, 0 ); }
+  | UNSETENVP               { UnSetEnv( $1, 1 ); }
   | PRINTENV                { printenv(); }
   | CD                      { cd( $1 ); }
-  | ALIAS                   { aliasFun( $1 ); }
+  | ALIAS                   { aliasFun( $1 , 0); }
+  | ALIASA                  { aliasFun( $1 , 1); }
+  | ALIASP                  { aliasFun( $1 , -1); }
+  | ALIASC                  { aliasFun( $1 , -2); }
   | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
   | CDE                     { cde(); }
   | LS                      { ls( $1 ); }
@@ -127,12 +138,25 @@ STMT:
     }
   }
 
-void SetEnv(char* input){
+void SetEnv(char* input, int pass){
     char* expInput = run_command(input);
-    char delim[] = " ";
-    char* ptr1 = strtok(expInput, delim);
-    char* ptr2 = strtok(NULL, delim);
-    char* ptr3 = strtok(NULL, "/0");
+    char* delim;
+        char* ptr1;
+        char* ptr2;
+        char* ptr3;
+    if (pass == 1){
+            delim = " ";
+             ptr1 = strtok(input, delim);
+             ptr2 = strtok(NULL, delim);
+             ptr3 = strtok(NULL, "\"");
+             //printf("$2 is %s, $3 is %s", ptr2, ptr3);
+    }
+    else{
+         delim = " ";
+         ptr1 = strtok(expInput, delim);
+         ptr2 = strtok(NULL, delim);
+         ptr3 = strtok(NULL, "/0");}
+
     //printf("$2 is %s, $3 is %s", ptr2, ptr3);
     setenv(ptr2, ptr3, 1);
 }
@@ -158,21 +182,42 @@ void cde() {
       } 
 }
 
-void UnSetEnv(char* input){
-    char* expInput = run_command(expInput);
+void UnSetEnv(char* input, int pass){
+
     char delim[] = " ";
     char* ptr1 = strtok(input, delim);
     char* ptr2 = strtok(NULL, "/0");
     //printf("$1 is %s, $2 is %s", ptr1, ptr2);
+    if(pass == 1){ptr2 = run_command(ptr2);}
     unsetenv(ptr2);
 }
 
-void aliasFun(char* toAlias){
-  char* expInput = run_command(toAlias);
-char delim[] = " ";
-    char* ptr1 = strtok(expInput, delim);
-    char* ptr2 = strtok(NULL, delim);
-    char* ptr3 = strtok(NULL, "/0");
+void aliasFun(char* toAlias, int pass){
+
+  char* delim;
+  char* ptr1;
+  char* ptr2;
+  char* ptr3;
+  if(pass == 1){delim = "\"";
+  ptr1 = strtok(toAlias, " ");
+  ptr2 = strtok(NULL, " ");
+  ptr3 = strtok(NULL, delim);
+  //printf("%s ptr1, %s ptr2, %s ptr3", ptr1, ptr2, ptr3);
+  }
+  else if(pass == -1){delim = " ";
+      ptr1 = strtok(toAlias, delim);
+      ptr2 = strtok(NULL, delim);
+      char* val = strtok(NULL, "/0");
+      ptr3 = run_command(val);}
+      else if(pass == -2){delim = " ";
+            ptr1 = strtok(toAlias, delim);
+            char* val = strtok(NULL, delim);
+            ptr3 = strtok(NULL, "/0");
+            ptr2 = run_command(val);}
+  else{delim = " ";
+    ptr1 = strtok(toAlias, delim);
+    ptr2 = strtok(NULL, delim);
+    ptr3 = strtok(NULL, "/0");}
     if(ptr2 == NULL && ptr3 == NULL){
     printAlias( aliasHead);
     }
@@ -231,7 +276,7 @@ void removeAlias(node_t** head, char* name) {
     if (current == *head) *head = current->next;
     if (prev != NULL) prev->next = current->next;
     free(current);
-    return 0;
+    return;
 }
 
 char* run_command(char* input)
@@ -392,12 +437,15 @@ void echo(char* words, int space){
 if(space == 0){ char delim[] = "\"";
 char* ptr1 = strtok(words, delim);
     char* ptr2 = strtok(NULL, delim);
-    printf("%s\n", ptr2);}
+    char* ptr3 = run_command(ptr2);
+    printf("%s\n", ptr3);}
+
 else if (space == 1){
 char delim[] = " ";
 char* ptr1 = strtok(words, delim);
     char* ptr2 = strtok(NULL, "\0");
-    printf("%s\n", ptr2);}
+    char* ptr3 = run_command(ptr2);
+        printf("%s\n", ptr3);}
 }
 
 void aliasChecker( node_t** head, char* alias){
@@ -405,7 +453,7 @@ void aliasChecker( node_t** head, char* alias){
 node_t* current = *head;
     node_t* prev = NULL;
     while (1) {
-        if (current == NULL){ printf("%s\n", alias); return;}//print/execute alias
+        if (current == NULL){ char* print = run_command(alias); aliasFunctionsPrint(print); return;}//print/execute alias
         if (strcmp(current->alias, alias) == 0){ aliasChecker(head, current->val); return;}
         prev = current;
         current = current->next;
@@ -512,7 +560,13 @@ if((f2 = fopen(ptr3, write) ) != NULL){
     while ((c = getc(f1)) != EOF){
         fputc(c, f2);}
 }
- else{printf("Unexpected error" );}
+ else{printf("Unexpected error\n" );}
 fclose(f2);
 fclose(f1);
 }}
+
+void aliasFunctionsPrint(char* aliasString){
+if(strncmp("echo \"", aliasString, 6)){ echo(aliasString, 1);}
+else if(strncmp("echo ", aliasString, 6)){echo(aliasString, 1);}
+else{printf("%s\n", aliasString);}
+}
