@@ -44,6 +44,7 @@
   void catNew(char* catFile);
   void catApp(char* catFile, int open);
   void aliasFunctionsPrint(char* aliasString);
+  void pwd();
 %}
 
 
@@ -51,7 +52,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD
 %type <number> NUMBER
 %type <sval> NEWLINE
 %type <sval> WORDS
@@ -80,6 +81,7 @@
 %type <sval> CATW
 %type <sval> CATNEW
 %type <sval> CATAPP
+%type <sval> PWD
 
 %union {
   int number;
@@ -121,6 +123,7 @@ STMT:
   | CATNEW                  { catNew( $1 ); }
   | CATAPP                  { catApp( $1, 0 ); }
   | CATW                    { catApp( $1, 1 ); }
+  | PWD                     { pwd(); }
   ;
 
 
@@ -569,4 +572,12 @@ void aliasFunctionsPrint(char* aliasString){
 if(strncmp("echo \"", aliasString, 6)){ echo(aliasString, 1);}
 else if(strncmp("echo ", aliasString, 6)){echo(aliasString, 1);}
 else{printf("%s\n", aliasString);}
+}
+
+void pwd() {
+  char* cwd;
+    cwd = malloc(256);
+    cwd = getcwd(cwd, 256);
+    printf(cwd);
+    printf("\n");
 }
