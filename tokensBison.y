@@ -169,11 +169,24 @@ void cd(char* input) {
   int ret;
   char delim[] = " ";
     char* ptr1 = strtok(expInput, delim);
-    char* ptr2 = strtok(NULL, "/0");
+    char* ptr2 = strtok(NULL, " ");
+    char* cwd;
+        cwd = malloc(2000);
+        cwd = getcwd(cwd, 2000);
+    if (ptr2[0] == '/')
+    {
+      chdir("/");
+    }
       ret = chdir(ptr2);
       if (ret != 0)
       {
         printf("no such file or directory\n");
+        chdir(cwd);
+      }
+      else
+      {
+        cwd = getcwd(cwd, 2000);
+        setenv("PWD", cwd, 1);
       }
 }
 
@@ -183,6 +196,12 @@ void cde() {
   if (ret != 0){
         printf("no such file or directory\n");
       } 
+      else{
+        char* cwd;
+    cwd = malloc(256);
+    cwd = getcwd(cwd, 256);
+        setenv("PWD", cwd, 1);
+      }
 }
 
 void UnSetEnv(char* input, int pass){
