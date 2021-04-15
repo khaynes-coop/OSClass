@@ -45,6 +45,9 @@
   void catApp(char* catFile, int open);
   void aliasFunctionsPrint(char* aliasString);
   void pwd();
+  char** sortStrings(char* input);
+    unsigned long int fileLineCount(char* file);
+    void sortfile(char **array, int linecount);
 %}
 
 
@@ -52,8 +55,9 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD SORT
 %type <number> NUMBER
+%type <sval> SORT
 %type <sval> NEWLINE
 %type <sval> WORDS
 %type <sval> GREETING
@@ -124,6 +128,7 @@ STMT:
   | CATAPP                  { catApp( $1, 0 ); }
   | CATW                    { catApp( $1, 1 ); }
   | PWD                     { pwd(); }
+  | SORT                    { char** print = sortStrings( $1 ); int j = atoi(print[0]); if (j > 0){j++; for(int c = 1; c < j; c++) printf("%s", print[c]); printf("\n");} else printf("%s\n",  print[0]);}
   ;
 
 
@@ -601,4 +606,107 @@ void pwd() {
     cwd = getcwd(cwd, 256);
     printf(cwd);
     printf("\n");
+}
+
+char** sortStrings(char* input){
+char* ptr3 = NULL;
+    char* delim = " ";
+
+    char* ptr1 = strtok(input, delim); //sort
+    strtok(NULL, delim);
+    char* ptr2 = strtok(NULL, delim); // file 1
+
+    if(strtok(NULL, delim) != NULL){
+    ptr3 = strtok(NULL, "/0"); //file 2
+    //printf("$2 is %s, $3 is %s", ptr2, ptr3);
+    }
+
+     unsigned long int linecount = fileLineCount(ptr2);
+        char **array = (char**)malloc(linecount * sizeof(char*));
+        char singleline[4096];
+FILE *filePointer;
+
+    if((filePointer = fopen(ptr2, "r") )== NULL){
+        printf("no such filename\n");
+        fclose(filePointer);
+        char** ret =(char**)malloc(sizeof(char*) * 4);
+        char* set = "Error: No Such File";
+        ret[0] = set;
+        return ret;
+    }
+        int i = 1;
+        array[0] = (char*) malloc (4096 * sizeof(char));
+        sprintf(array[0], "%lu", linecount);
+
+            while(fgets(singleline, 4096, filePointer) != NULL)
+            {
+                array[i] = (char*) malloc (4096 * sizeof(char));
+                singleline[4095] = '\0';
+                strcpy(array[i], singleline);
+                i++;
+            }
+
+sortfile(array, linecount);
+fclose(filePointer);
+        if(ptr3 != NULL){
+        FILE *FukinFile = NULL;
+        //print to the file
+        if((FukinFile = fopen(ptr3, "w+") )== NULL){
+        char** ret =(char**)malloc(sizeof(char*) * 4);
+                     ret[0] = "Error Opening file";
+                     return ret;
+        }
+
+        //for(int c = 1; c < linecount +1; c++) printf("%s", array[c]);
+
+        for(int i = 1; i < linecount + 1; i++){
+        fprintf(FukinFile, "%s", array[i]);
+        }
+
+        fclose(FukinFile);
+
+            char** ret =(char**)malloc(sizeof(char*) * 4);
+             ret[0] = ptr3;
+             return ret;
+        }
+        else{
+
+        return array;
+        }
+}
+
+unsigned long int fileLineCount(char* file){
+FILE *fp = fopen(file, "r");
+    unsigned long int linecount = 0;
+    int c;
+    if(fp == NULL){
+        fclose(fp);
+        return 0;
+    }
+    while((c=fgetc(fp)) != EOF )
+    {
+        if(c == '\n')
+            linecount++;
+    }
+    fclose(fp);
+    linecount++;
+    return linecount;
+
+}
+
+void sortfile(char **array, int linecount){
+    int i, j;
+    char t[4096];
+    for(i=2;i<linecount;i++)
+    {
+        for(j=2;j<linecount;j++)
+        {
+            if(strcmp(array[j-1], array[j]) > 0)
+            {
+                strcpy(t, array[j-1]);
+                strcpy(array[j-1], array[j]);
+                strcpy(array[j], t);
+            }
+        }
+    }
 }
