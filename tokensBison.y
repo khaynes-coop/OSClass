@@ -699,6 +699,8 @@ void wc(char* input) {
       else
         printf("%d %d %d total\n", totlines, totwords, totchars, ptr1);
   }
+}
+
 char** sortStrings(char* input){
 char* ptr3 = NULL;
     char* delim = " ";
