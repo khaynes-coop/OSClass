@@ -697,9 +697,9 @@ FILE *fp = fopen(file, "r");
 void sortfile(char **array, int linecount){
     int i, j;
     char t[4096];
-    for(i=2;i<linecount;i++)
+    for(i=1; i < linecount;i++)
     {
-        for(j=2;j<linecount;j++)
+        for(j=1; j < linecount; j++)
         {
             if(strcmp(array[j-1], array[j]) > 0)
             {
