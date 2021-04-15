@@ -27,8 +27,8 @@ setenv[ ][a-zA-Z0-9]+[ ]{QUOTE}{NOTECHOS}+{QUOTE}   { yylval.sval = strdup(yytex
 setenv[ ][a-zA-Z0-9]+[ ]{NOTENV}+                   { yylval.sval = strdup(yytext); return SETENV; }
 printenv                                            { yylval.sval = strdup(yytext); return PRINTENV; }
 unsetenv[ ][a-zA-Z0-9]+                             { yylval.sval = strdup(yytext); return UNSETENV; }
-cd[ ][a-zA-Z0-9\/.]*                                             { yylval.sval = strdup(yytext); return CD; }
-(cd|cd[ ][~])                                              { yylval.sval = strdup(yytext); return CDE; }
+cd[ ][a-zA-Z0-9\/.\${}]*                            { yylval.sval = strdup(yytext); return CD; }
+(cd|cd[ ][~])                                       { yylval.sval = strdup(yytext); return CDE; }
 alias[ ]*[a-zA-Z0-9]*[ ]*[a-zA-Z0-9]*               { yylval.sval = strdup(yytext); return ALIAS;}
 alias[ ][a-zA-Z0-9]+[ ]${META}[a-zA-Z0-9]+{META}    { yylval.sval = strdup(yytext); return ALIASP;}
 alias[ ]${META}[a-zA-Z0-9]+{META}[ ][a-zA-Z0-9]+    { yylval.sval = strdup(yytext); return ALIASC;}
@@ -43,7 +43,7 @@ cat[ ]>[a-zA-Z0-9]+.txt                             { yylval.sval = strdup(yytex
 cat[ ][a-zA-Z0-9]+.txt[ ]>>[ ][a-zA-Z0-9]+.txt      { yylval.sval = strdup(yytext); return CATAPP;};
 cat[ ][a-zA-Z0-9]+.txt[ ]>[ ][a-zA-Z0-9]+.txt       { yylval.sval = strdup(yytext); return CATW;};
 cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytext); return CAT;};
-pwd([ ][a-zA-Z0-9]*)?                                  { yylval.sval = strdup(yytext); return PWD;};
+pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
 
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }

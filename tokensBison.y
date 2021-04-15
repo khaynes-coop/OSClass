@@ -165,43 +165,45 @@ void SetEnv(char* input, int pass){
 }
 
 void cd(char* input) {
-  char* expInput = run_command(input);
-  int ret;
+  char* newInput = run_command(input);
+  int ret = 1;
   char delim[] = " ";
-    char* ptr1 = strtok(expInput, delim);
-    char* ptr2 = strtok(NULL, " ");
-    char* cwd;
-        cwd = malloc(2000);
-        cwd = getcwd(cwd, 2000);
-    if (ptr2[0] == '/')
-    {
-      chdir("/");
-    }
-      ret = chdir(ptr2);
-      if (ret != 0)
-      {
-        printf("no such file or directory\n");
-        chdir(cwd);
-      }
-      else
-      {
-        cwd = getcwd(cwd, 2000);
-        setenv("PWD", cwd, 1);
-      }
+  char* ptr1 = strtok(newInput, delim);
+  char* ptr2 = strtok(NULL, " ");
+  char* cwd;
+  cwd = malloc(2000);
+  cwd = getcwd(cwd, 2000);
+  if (ptr2[0] == '/')
+  {
+    chdir("/");
+  }
+  ret = chdir(ptr2);
+  if (ret != 0)
+  {
+    printf("no such file or directory\n");
+    chdir(cwd);
+  }
+  else
+  {
+    cwd = getcwd(cwd, 2000);
+    setenv("PWD", cwd, 1);
+  }
 }
 
 void cde() {
   int ret;
   ret =chdir(getenv("HOME"));
-  if (ret != 0){
-        printf("no such file or directory\n");
-      } 
-      else{
-        char* cwd;
+  if (ret != 0)
+  {
+    printf("no such file or directory\n");
+  } 
+  else
+  {
+    char* cwd;
     cwd = malloc(256);
     cwd = getcwd(cwd, 256);
-        setenv("PWD", cwd, 1);
-      }
+    setenv("PWD", cwd, 1);
+  }
 }
 
 void UnSetEnv(char* input, int pass){
