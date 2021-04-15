@@ -188,7 +188,7 @@ void cd(char* input) {
   ret = chdir(ptr2);
   if (ret != 0)
   {
-    printf("no such file or directory\n");
+    printf("Error no such file or directory\n");
     chdir(cwd);
   }
   else
@@ -203,7 +203,7 @@ void cde() {
   ret =chdir(getenv("HOME"));
   if (ret != 0)
   {
-    printf("no such file or directory\n");
+    printf("Error no such file or directory\n");
   } 
   else
   {
@@ -430,11 +430,11 @@ void ls(const char* input) {
   {
     if (errno = ENOENT)
     {
-      printf("Directory doesn't exist\n");
+      printf("Error directory doesn't exist\n");
     }
     else
     {
-      printf("Unable to read directory\n");
+      printf("Error unable to read directory\n");
     }
     return;
   }
