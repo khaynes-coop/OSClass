@@ -24,8 +24,8 @@
   void yyerror(const char *s);
   void printenv();
   void SetEnv(char* input, int pass);
-  void cd(char* input);
-  void cde();
+  char* cd(char* input);
+  char* cde();
   void UnSetEnv(char* input, int pass);
   void aliasFun(char* toAlias, int pass);
   void printAlias(node_t* head);
@@ -34,8 +34,8 @@
   void unAssignAlias(node_t** head, char* name);
   char* run_command(char* input);
   int aliasLoop(node_t** head, char* name, char* word);
-  void ls(const char* input);
-  void lse();
+  char* ls(const char* input);
+  char* lse();
   void echo(char* words, int space);
   void aliasChecker(node_t** head, char* alias);
   void catFileOpenReadClose(char* file);
@@ -44,8 +44,8 @@
   void catNew(char* catFile);
   void catApp(char* catFile, int open);
   void aliasFunctionsPrint(char* aliasString);
-  void pwd();
-  void wc(char* input);
+  char* pwd();
+  char* wc(char* input);
   char** sortStrings(char* input);
     unsigned long int fileLineCount(char* file);
     void sortfile(char **array, int linecount);
@@ -172,7 +172,7 @@ void SetEnv(char* input, int pass){
     setenv(ptr2, ptr3, 1);
 }
 
-void cd(char* input) {
+char* cd(char* input) {
   char* newInput = run_command(input);
   int ret = 1;
   char delim[] = " ";
@@ -188,22 +188,22 @@ void cd(char* input) {
   ret = chdir(ptr2);
   if (ret != 0)
   {
-    printf("Error no such file or directory\n");
-    chdir(cwd);
+    return("Error no such file or directory\n");
   }
   else
   {
     cwd = getcwd(cwd, 2000);
     setenv("PWD", cwd, 1);
+    return("");
   }
 }
 
-void cde() {
+char* cde() {
   int ret;
   ret =chdir(getenv("HOME"));
   if (ret != 0)
   {
-    printf("Error no such file or directory\n");
+    return("Error no such file or directory\n");
   } 
   else
   {
@@ -211,6 +211,7 @@ void cde() {
     cwd = malloc(256);
     cwd = getcwd(cwd, 256);
     setenv("PWD", cwd, 1);
+    return("");
   }
 }
 
@@ -389,7 +390,7 @@ node_t* current = *head;
 
 
 }
-void ls(const char* input) {
+char* ls(const char* input) {
   char* newInput = run_command(input);
   char delim[] = " ";
     char* ptr1 = strtok(newInput, delim);
@@ -430,23 +431,27 @@ void ls(const char* input) {
   {
     if (errno = ENOENT)
     {
-      printf("Error directory doesn't exist\n");
+      return("Error directory doesn't exist\n");
     }
     else
     {
-      printf("Error unable to read directory\n");
+      return("Error unable to read directory\n");
     }
-    return;
+    return("");
   }
+  char* returnstring;
+  returnstring = malloc(sizeof(node_t));
   dir = readdir(dh);
  while (dir != NULL)
   {
-    printf("%s\n", dir->d_name);
+    strcat(returnstring, dir->d_name);
+    strcat(returnstring, "\n");
     dir = readdir(dh);
   }
+  return returnstring;
 }
 
-void lse()
+char* lse()
 {
   struct dirent *dir;
   DIR *dh;
@@ -458,8 +463,12 @@ void lse()
     dh = opendir(cwd);
     chdir(cwd);
     dir = readdir(dh);
+    char* returnstring;
+    returnstring = malloc(sizeof(node_t));
  while (dir != NULL)
   {
+    strcat(returnstring, dir->d_name);
+    strcat(returnstring, "\n");
     printf("%s\n", dir->d_name);
     dir = readdir(dh);
   }
@@ -603,20 +612,22 @@ else if(strncmp("echo ", aliasString, 6)){echo(aliasString, 1);}
 else{printf("%s\n", aliasString);}
 }
 
-void pwd() {
+char* pwd() {
   char* cwd;
     cwd = malloc(256);
     cwd = getcwd(cwd, 256);
-    printf(cwd);
-    printf("\n");
+    strcat(cwd, "\n");
+    return cwd;
 }
 
-void wc(char* input) {
+char* wc(char* input) {
+  char* buf;
   char* newInput = run_command(input);
   int lflag = 0, wflag = 0, cflag = 0;
   int totlines = 0, totwords = 0, totchars = 0, fcount = 0;
   char delim[] = " ";
   char* ptr1 = strtok(newInput, delim);
+  char* returnstring;
   ptr1 = strtok(NULL, delim);
   while (ptr1 != NULL)
   {
@@ -637,10 +648,11 @@ void wc(char* input) {
       fcount++;
       FILE *file;
       char ch;
+      buf = malloc(256);
       int lines =  0, words = 1, chars = 0, word = 0;
       if ((file = fopen(ptr1, "r")) == NULL)
       {
-        printf("Error no such filename %s\n", ptr1);
+        return("Error no such filename\n");
       }
       else
       {
@@ -661,19 +673,76 @@ void wc(char* input) {
             word = 1;
         }
       if (lflag == 1 && wflag == 0 && cflag == 0)
-        printf("%d %s\n", lines, ptr1);
+        {
+          sprintf(buf, "%d", lines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, ptr1);
+          strcat(returnstring, "\n");
+        }
       else if (lflag == 1 && wflag == 1 && cflag == 0)
-        printf("%d %d %s\n", lines, words, ptr1);
+        {
+          sprintf(buf, "%d", lines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", words);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, ptr1);
+          strcat(returnstring, "\n");
+        }
       else if (lflag == 1 && wflag == 0 && cflag == 1)
-        printf("%d %d %s\n", lines, chars, ptr1);
+        {
+          sprintf(buf, "%d", lines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", chars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, ptr1);
+          strcat(returnstring, "\n");
+        }
       else if (lflag == 0 && wflag == 1 && cflag == 0)
-        printf("%d %s\n", words, ptr1);
+      {
+          sprintf(buf, "%d", words);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, ptr1);
+          strcat(returnstring, "\n");
+        }
       else if (lflag == 0 && wflag == 1 && cflag == 1)
-        printf("%d %d %s\n", words, chars, ptr1);
+        {
+          sprintf(buf, "%d", words);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", chars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, ptr1);
+          strcat(returnstring, "\n");
+        }
       else if (lflag == 0 && wflag == 0 && cflag == 1)
-        printf("%d %s\n", chars, ptr1);
+        {
+          sprintf(buf, "%d", chars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, ptr1);
+          strcat(returnstring, "\n");
+        }
       else
-        printf("%d %d %d %s\n", lines, words, chars, ptr1);
+        {
+          sprintf(buf, "%d", lines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", words);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", chars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, ptr1);
+          strcat(returnstring, "\n");
+        }
       totlines += lines;
       totwords += words;
       totchars += chars;
@@ -685,20 +754,71 @@ void wc(char* input) {
   if (fcount > 1)
   {
     if (lflag == 1 && wflag == 0 && cflag == 0)
-        printf("%d total\n", totlines, ptr1);
+        {
+          sprintf(buf, "%d", totlines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, "total\n");
+        }
       else if (lflag == 1 && wflag == 1 && cflag == 0)
-        printf("%d %d total\n", totlines, totwords, ptr1);
+        {
+          sprintf(buf, "%d", totlines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", totwords);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, "total\n");
+        }
       else if (lflag == 1 && wflag == 0 && cflag == 1)
-        printf("%d %d total\n", totlines, totchars, ptr1);
+        {
+          sprintf(buf, "%d", totlines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", totchars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, "total\n");
+        }
       else if (lflag == 0 && wflag == 1 && cflag == 0)
-        printf("%d total\n", totwords, ptr1);
+        {
+          sprintf(buf, "%d", totwords);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, "total\n");
+        }
       else if (lflag == 0 && wflag == 1 && cflag == 1)
-        printf("%d %d total\n", totwords, totchars, ptr1);
+        {
+          sprintf(buf, "%d", totwords);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", totchars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, "total\n");
+        }
       else if (lflag == 0 && wflag == 0 && cflag == 1)
-        printf("%d total\n", totchars, ptr1);
+        {
+          sprintf(buf, "%d", totchars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, "total\n");
+        }
       else
-        printf("%d %d %d total\n", totlines, totwords, totchars, ptr1);
+        {
+          sprintf(buf, "%d", totlines);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", totwords);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          sprintf(buf, "%d", totchars);
+strcat(returnstring, buf);
+          strcat(returnstring, " ");
+          strcat(returnstring, "total\n");
+        }
   }
+  return returnstring;
 }
 
 char** sortStrings(char* input){
