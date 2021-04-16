@@ -129,8 +129,8 @@ STMT:
   | ALIASC                  { aliasFun( $1 , -2); }
   | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
   | CDE                     { cde(); }
-  | LS                      { ls( $1 ); }
-  | LSE                     { lse(); }
+  | LS                      { char* p = ls( $1 ); printf("%s", p); }
+  | LSE                     { char* p = lse(); printf("%s", p); }
   | ECHOS                   { char* p = echo( $1 , 0); printf("%s", p);}
   | ECHOA                   { char* p = echo( $1 , 1); printf("%s", p); }
   | CAT                     { catDecode( $1 ); }
@@ -138,9 +138,10 @@ STMT:
   | CATAPP                  { catApp( $1, 0 ); }
   | CATW                    { catApp( $1, 1 ); }
   | PWD                     { pwd(); }
-  | WC                      { wc( $1 );}
+  | WC                      { char* print = wc( $1 ); printf("%s", print);}
   | SORT                    { char** print = sortStrings( $1 ); int j = atoi(print[0]); if (j > 0){j++; for(int c = 1; c < j; c++) printf("%s", print[c]); printf("\n");} else printf("%s\n",  print[0]);}
   | DATE                    { date(); }
+  | PIPPET                  { pipeFunction( $1 ); }
   ;
 
 
@@ -449,7 +450,7 @@ char* ls(const char* input) {
     return("");
   }
   char* returnstring;
-  returnstring = malloc(sizeof(node_t));
+  returnstring = (char* )malloc(sizeof(node_t)* 100);
   dir = readdir(dh);
  while (dir != NULL)
   {
@@ -473,14 +474,15 @@ char* lse()
     chdir(cwd);
     dir = readdir(dh);
     char* returnstring;
-    returnstring = malloc(sizeof(node_t));
+    returnstring = (char* )malloc(sizeof(node_t)* 100);
  while (dir != NULL)
   {
     strcat(returnstring, dir->d_name);
     strcat(returnstring, "\n");
-    printf("%s\n", dir->d_name);
+    //printf("%s\n", dir->d_name);
     dir = readdir(dh);
   }
+  return returnstring;
   }
 char* echo(char* words, int space){
 
@@ -616,9 +618,8 @@ fclose(f1);
 }}
 
 void aliasFunctionsPrint(char* aliasString){
-if(strncmp("echo \"", aliasString, 6)){ echo(aliasString, 1);}
-else if(strncmp("echo ", aliasString, 6)){echo(aliasString, 1);}
-else{printf("%s\n", aliasString);}
+
+printf("%s\n", aliasString);
 }
 
 char* pwd() {
@@ -941,30 +942,36 @@ char* date()
 }
 
 char* sortNotFile(char* input){
-    char* tempstr = calloc(strlen(input)+1, sizeof(char));
+
+char tempstr[strlen(input) + 1];
+strncpy(tempstr, input, sizeof(tempstr));
+printf("%s", input);
     char* delim = "\n";
-    unsigned long int numNewLine = 1;
+    unsigned long int numNewLine = 0;
     char* token = strtok(tempstr, delim);
+
     while(token != NULL){
-    numNewLine++;
+    numNewLine = numNewLine + 1;
     token = strtok(NULL, delim);
     }
+    if(numNewLine == 0){return input;}
 
     char **array = (char**)malloc(numNewLine * sizeof(char*));
     char* singleline;
-         singleline = strtok(input, delim);;
+         singleline = strtok(input, delim);
     for(int i = 0; i < numNewLine; i++){
     array[i] = singleline;
     singleline = strtok(NULL, delim);
     }
 
-//sortfile(array, linecount);
-
-        for(int i = 0; i < numNewLine; i++){
-        printf("%d: %s", numNewLine, array[i]);
+sortfile(array, numNewLine);
+strcpy(input, array[0]);
+        for(int i = 1; i < numNewLine; i++){
+        strcat(input, "\n");
+        strcat(input, array[i]);
         }
 
-        return singleline;
+        return input;
 
 }
 
@@ -973,12 +980,13 @@ char tempstr[strlen(pipesBars) + 1];
 strncpy(tempstr, pipesBars, sizeof(tempstr));
     char* delim = "|";
     unsigned long int numBar = 0;
+    //printf("%s\n", tempstr);
     char* token = strtok(tempstr, delim);
 
     while(token != NULL){
     numBar= numBar + 1;
                 token = strtok(NULL, delim);}
-
+ //printf("%s\n", pipesBars);
 char **array = (char**)malloc(numBar * sizeof(char*));
     char* singleline;
      singleline = strtok(pipesBars, delim);
@@ -986,19 +994,36 @@ char **array = (char**)malloc(numBar * sizeof(char*));
     array[i] = singleline;
     singleline = strtok(NULL, delim);
     }
-//array[1]+ has whitespace, it gone
+
     for(int i = 1; i < numBar; i++){
     array[i]++;
-            //printf("%lu: %s\n", numBar, array[i]);
+           //printf("%lu: %s\n", numBar, array[i]);
             }
-
-   char* currVal;
-   char* prevVal;
+   char currVal[4096];
+   char prevVal[4096];
+   printf("%s\n",  array[0]);
 for(int i = 0; i < numBar; i++){
-//if(strncmp("echo", array[i], 4))
 
+strncpy(prevVal, currVal, sizeof(prevVal));
+if(strncmp("echo ", &array[i], 4) == 0){
+char* print = echo(array[i], 1);
+printf("%s", print);
+strncpy(currVal, print, sizeof(currVal));
+}
+else if(strncmp("ls ", array[i], 3) == 0){
+char* print = lse();
+//printf("%s", print);
+strncpy(currVal, print, sizeof(currVal));
+}
+else if(strncmp("sort", array[i], 4) == 0){
+strncpy(currVal, sortNotFile(prevVal), sizeof(currVal));
+}
+else if(strncmp("wc ", array[i], 2) == 0){
+char* print = wc(array[i]);
+strncpy(currVal, print, sizeof(currVal));
+}
 
 }
 
-
+printf("%s\n", currVal);
 }

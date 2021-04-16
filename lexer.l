@@ -4,13 +4,14 @@
 #include "tokensBison.tab.h"
 %}
 DIGIT       [0-9]
-META        [\[\]{},:\"]
+META        [\[\]{},|:\"]
 QUOTE       ["]
 NOTQUOTE    [^"]
 NOTECHOS    [^"^\n]
 NOTENV    [^"^\n^ ]
 PIPE        [|]
 NOTNEWLINE  [^\n^|]
+
 NOTNEWLINE2  [^\n]
 TXT         [.txt]
 %x          expect_string
@@ -23,6 +24,8 @@ TXT         [.txt]
 <expect_string>{NOTQUOTE}*                              { yylval.sval = strdup(yytext); return WORDS; }
 <expect_string>{QUOTE}                                  { BEGIN(INITIAL); yylval.sval = strdup(yytext); return META;}
 
+
+{NOTNEWLINE}+[ ]{PIPE}[ ]{NOTNEWLINE}+[ ]*{PIPE}*{NOTNEWLINE2}* { yylval.sval = strdup(yytext); return PIPPET;}
 exit|Exit|EXIT|bye                                  { yylval.sval = strdup(yytext); return EXITTOKEN; }
 hello|hey|hi                                        { yylval.sval = strdup(yytext); return GREETING; }
 setenv[ ][a-zA-Z0-9]+[ ]{QUOTE}{NOTECHOS}+{QUOTE}   { yylval.sval = strdup(yytext); return SETENVQ; }
@@ -35,8 +38,6 @@ alias[ ]*[a-zA-Z0-9]*[ ]*[a-zA-Z0-9]*               { yylval.sval = strdup(yytex
 alias[ ][a-zA-Z0-9]+[ ]${META}[a-zA-Z0-9]+{META}    { yylval.sval = strdup(yytext); return ALIASP;}
 alias[ ]${META}[a-zA-Z0-9]+{META}[ ][a-zA-Z0-9]+    { yylval.sval = strdup(yytext); return ALIASC;}
 alias[ ][a-zA-Z0-9]*[ ]{QUOTE}{NOTECHOS}*{QUOTE}    { yylval.sval = strdup(yytext); return ALIASA;}
-ls[ ][a-zA-Z.\/]*                                     { yylval.sval = strdup(yytext); return LS;}
-ls                                                  { yylval.sval = strdup(yytext); return LSE;}
 unalias[ ]${META}[a-zA-Z0-9]+{META}                 { yylval.sval = strdup(yytext); return UNALIAS;}
 unalias[ ][a-zA-Z0-9]+                              { yylval.sval = strdup(yytext); return UNALIAS;}
 echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                    { yylval.sval = strdup(yytext); return ECHOS;};
@@ -46,11 +47,12 @@ cat[ ][a-zA-Z0-9]+.txt[ ]>>[ ][a-zA-Z0-9]+.txt      { yylval.sval = strdup(yytex
 cat[ ][a-zA-Z0-9]+.txt[ ]>[ ][a-zA-Z0-9]+.txt       { yylval.sval = strdup(yytext); return CATW;};
 cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytext); return CAT;};
 pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
+ls[ ][a-zA-Z.\/]*                                     { yylval.sval = strdup(yytext); return LS;}
+ls                                                  { yylval.sval = strdup(yytext); return LSE;}
+
 wc([ ].*)+                                          { yylval.sval = strdup(yytext); return WC;};
 sort[ ]<[ ][a-zA-Z0-9]+.txt[ ]*>*[ ]*[a-zA-Z0-9]*{TXT}* { yylval.sval = strdup(yytext); return SORT;}
 date                                                { yylval.sval = strdup(yytext); return DATE;}
-{NOTNEWLINE}+[ ]{PIPE}[ ]{NOTNEWLINE}+[ ]*{PIPE}*{NOTNEWLINE2}* { yylval.sval = strdup(yytext); return PIPPET;}
-
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }
