@@ -488,6 +488,9 @@ char* lse()
   return returnstring;
   }
 char* echo(char* words, int space){
+//printf("%s", words);
+char* ptr3;
+ptr3 = malloc(sizeof(char*)*100);
 
 if(space == 0){ char delim[] = "\"";
 char* ptr1 = strtok(words, delim);
@@ -500,6 +503,7 @@ char delim[] = " ";
 char* ptr1 = strtok(words, delim);
     char* ptr2 = strtok(NULL, "\0");
     char* ptr3 = run_command(ptr2);
+    //printf("%s", ptr3);
         return ptr3;}
 }
 
@@ -948,7 +952,7 @@ char* sortNotFile(char* input){
 
 char tempstr[strlen(input) + 1];
 strncpy(tempstr, input, sizeof(tempstr));
-printf("%s", input);
+//printf("%s", input);
     char* delim = "\n";
     unsigned long int numNewLine = 0;
     char* token = strtok(tempstr, delim);
@@ -1004,13 +1008,12 @@ char **array = (char**)malloc(numBar * sizeof(char*));
             }
    char currVal[4096];
    char prevVal[4096];
-   printf("%s\n",  array[0]);
+   //printf("%s\n",  array[0]);
 for(int i = 0; i < numBar; i++){
 
 strncpy(prevVal, currVal, sizeof(prevVal));
-if(strncmp("echo ", &array[i], 4) == 0){
+if(strncmp("echo ", array[i], 4) == 0){
 char* print = echo(array[i], 1);
-printf("%s", print);
 strncpy(currVal, print, sizeof(currVal));
 }
 else if(strncmp("ls ", array[i], 3) == 0){
