@@ -54,6 +54,7 @@
     char* sortNotFile(char* input);
     char* pipeFunction(char* pipesBars);
   char* grep(char* input);
+  char* rev(char* input);
 %}
 
 
@@ -62,7 +63,7 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT DATE PIPPET GREP
+%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT DATE PIPPET GREP REV
 
 %type <number> NUMBER
 %type <sval> SORT
@@ -98,6 +99,7 @@
 %type <sval> WC
 %type <sval> DATE
 %type <sval> GREP
+%type <sval> REV
 
 %union {
   int number;
@@ -145,6 +147,7 @@ STMT:
   | DATE                    { date(); }
   | PIPPET                  { pipeFunction( $1 ); }
   | GREP                    { grep( $1); }
+  | REV                     { rev( $1 ); }
   ;
 
 
@@ -1061,8 +1064,7 @@ char* grep(char* input)
     {
       if ((f = fopen(ptr1, "r")) == NULL)
       {
-        printf("Error no such filename\n");
-        return "";
+        return("Error no such filename\n");
       }
       const char* line;
       line = malloc(4096);
@@ -1078,5 +1080,31 @@ char* grep(char* input)
     }
     ptr1 = strtok(NULL, delim);
   }
+  return(returnstring);
+}
+
+char* rev(char* input)
+{
+  char* returnstring;
+  returnstring = malloc(sizeof(node_t));
+  char* ptr1 = strtok(input, " ");
+  char* ptr2 = strtok(NULL, " ");
+  FILE *f;
+  if((f = fopen(ptr2, "r")) == NULL)
+  {
+    return("Error no such filename\n");
+  }
+  char* temp;
+  temp = malloc(1000);
+  while (fgets(temp, 1000, f) != NULL)
+  {
+    const char* line = temp;
+    int len = strlen(line);
+    for (int i = len-1; i > 0; i--) {
+        strncat(returnstring, &line[i], 1);
+    }
+    strcat(returnstring, "\n");
+  }
+  fclose(f);
   return(returnstring);
 }

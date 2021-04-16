@@ -56,6 +56,7 @@ sort[ ]<[ ][a-zA-Z0-9]+.txt[ ]*>*[ ]*[a-zA-Z0-9]*{TXT}* { yylval.sval = strdup(y
 date                                                { yylval.sval = strdup(yytext); return DATE;}
 
 grep[ ].*[ ].*                                      { yylval.sval = strdup(yytext); return GREP;}
+rev[ ].*                                            { yylval.sval = strdup(yytext); return REV;}
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }
