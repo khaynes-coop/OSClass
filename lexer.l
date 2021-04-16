@@ -42,10 +42,11 @@ unalias[ ]${META}[a-zA-Z0-9]+{META}                 { yylval.sval = strdup(yytex
 unalias[ ][a-zA-Z0-9]+                              { yylval.sval = strdup(yytext); return UNALIAS;}
 echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                    { yylval.sval = strdup(yytext); return ECHOS;};
 echo[ ]{NOTECHOS}*                                  { yylval.sval = strdup(yytext); return ECHOA;};
+cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytext); return CAT;};
 cat[ ]>[a-zA-Z0-9]+.txt                             { yylval.sval = strdup(yytext); return CATNEW;};
 cat[ ][a-zA-Z0-9]+.txt[ ]>>[ ][a-zA-Z0-9]+.txt      { yylval.sval = strdup(yytext); return CATAPP;};
 cat[ ][a-zA-Z0-9]+.txt[ ]>[ ][a-zA-Z0-9]+.txt       { yylval.sval = strdup(yytext); return CATW;};
-cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytext); return CAT;};
+
 pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
 ls[ ][a-zA-Z.\/]*                                     { yylval.sval = strdup(yytext); return LS;}
 ls                                                  { yylval.sval = strdup(yytext); return LSE;}
@@ -58,6 +59,7 @@ grep[ ].*[ ].*                                      { yylval.sval = strdup(yytex
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }
+[A-Za-z0-9.]*                                   { yylval.sval = strdup(yytext); return WORDS; }
 {DIGIT}+|{DIGIT}*"."{DIGIT}+                    { yylval.number = atoi(yytext); return NUMBER; }
 {META}                                          { return META; }
 

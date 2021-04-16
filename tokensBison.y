@@ -39,10 +39,10 @@
   char* lse();
   char* echo(char* words, int space);
   void aliasChecker(node_t** head, char* alias);
-  void catFileOpenReadClose(char* file);
-  void catOpenReadClose(char* file, char* file2);
-  void catDecode(char* catFile);
-  void catNew(char* catFile);
+  char* catFileOpenReadClose(char* file);
+  char* catOpenReadClose(char* file, char* file2);
+  char* catDecode(char* catFile);
+  char* catNew(char* catFile);
   void catApp(char* catFile, int open);
   void aliasFunctionsPrint(char* aliasString);
   char* pwd();
@@ -131,16 +131,16 @@ STMT:
   | ALIASC                  { aliasFun( $1 , -2); }
   | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
   | CDE                     { cde(); }
-  | LS                      { char* p = ls( $1 ); printf("%s", p); }
-  | LSE                     { char* p = lse(); printf("%s", p); }
-  | ECHOS                   { char* p = echo( $1 , 0); printf("%s", p);}
-  | ECHOA                   { char* p = echo( $1 , 1); printf("%s", p); }
-  | CAT                     { catDecode( $1 ); }
-  | CATNEW                  { catNew( $1 ); }
+  | LS                      { char* p = ls( $1 ); printf("%s\n", p); }
+  | LSE                     { char* p = lse(); printf("%s\n", p); }
+  | ECHOS                   { char* p = echo( $1 , 0); printf("%s\n", p);}
+  | ECHOA                   { char* p = echo( $1 , 1); printf("%s\n", p); }
+  | CAT                     { char* print = catDecode( $1 ); printf("%s\n", print);}
+  | CATNEW                  { char* print =catNew( $1 ); printf("%s\n", print);}
   | CATAPP                  { catApp( $1, 0 ); }
   | CATW                    { catApp( $1, 1 ); }
   | PWD                     { pwd(); }
-  | WC                      { char* print = wc( $1 ); printf("%s", print);}
+  | WC                      { char* print = wc( $1 ); printf("%s\n", print);}
   | SORT                    { char** print = sortStrings( $1 ); int j = atoi(print[0]); if (j > 0){j++; for(int c = 1; c < j; c++) printf("%s", print[c]); printf("\n");} else printf("%s\n",  print[0]);}
   | DATE                    { date(); }
   | PIPPET                  { pipeFunction( $1 ); }
@@ -521,78 +521,90 @@ node_t* current = *head;
 
 }
 
-void catFileOpenReadClose(char* file){
+char* catFileOpenReadClose(char* file){
 FILE *filePointer;
-
+char* ptr4;
+ptr4 = malloc(sizeof(char*) * 200);
 if((filePointer = fopen(file, "r") )== NULL){
-printf("no such filename\n");
-return;
+ptr4 ="no such filename\n";
+return ptr4;
 }
 int c;
-while ((c = getc(filePointer)) != EOF)
-        putchar(c);
+int i = 0;
+
+while ( (c = getc(filePointer)) != EOF)
+                strncat(ptr4, &c, 1);
+
 fclose(filePointer);
-printf("\n");
+
+return ptr4;
 }
 
-void catDecode(char* catFile){
+char* catDecode(char* catFile){
+
 char delim[] = " ";
 char* ptr1 = strtok(catFile, delim);
     char* ptr2 = strtok(NULL, delim);
     char* ptr3 = strtok(NULL, "/0");
-
+char* ptr4;
+ptr4 = malloc(sizeof(char*) * 200);
 
     if(ptr2 != NULL && ptr3 == NULL){
-    catFileOpenReadClose(ptr2);
+    ptr4 = catFileOpenReadClose(ptr2);
     }
     if(ptr2 != NULL && ptr3 != NULL){
-        catOpenReadClose(ptr2, ptr3);
+        ptr4 = catOpenReadClose(ptr2, ptr3);
         }
+
+        return ptr4;
 }
 
-void catNew(char* catFile){
+char* catNew(char* catFile){
     char delim[] = " ";
     //printf("%s", catFile);
     char* ptr1 = strtok(catFile, delim);
     char* ptr2 = strtok(NULL, ">");
-
+char* ptr4;
+ptr4 = malloc(sizeof(char*) * 20);
 
     FILE *filePointer;
     filePointer = fopen(ptr2, "w");
     fclose(filePointer);
 
-    if((filePointer = fopen(ptr2, "r") ) != NULL){ printf("Successfully created file %s\n", ptr2);}
-    else{ printf("Did not create file %s\n", ptr2);}
+    if((filePointer = fopen(ptr2, "r") ) != NULL){ ptr4 = ptr2;}
+    else{ ptr4 = "Error Did not create file\n";}
 
 }
 
-void catOpenReadClose(char* file, char* file2){
+char* catOpenReadClose(char* file, char* file2){
 
 FILE *filePointer;
-
+char* ptr4;
+ptr4 = malloc(sizeof(char*) * 200);
 if((filePointer = fopen(file, "r") )== NULL){
-printf("no such filename %s\n", file);
-return;
+strcpy(ptr4, "Error no such filename\n");
+return ptr4;
 }
 else{
 int c;
-while ((c = getc(filePointer)) != EOF)
-        putchar(c);}
+int i = 0;
+while ( (c = getc(filePointer)) != EOF)
+                strncat(ptr4, &c, 1);
 fclose(filePointer);
 
 if((filePointer = fopen(file2, "r") )== NULL){
-printf("no such filename %s\n", file2);
-return;
+strcpy(ptr4, "Error no such filename\n");
+return ptr4;
 }
 else{
 int c;
-while ((c = getc(filePointer)) != EOF)
-        putchar(c);}
+while ( (c = getc(filePointer)) != EOF)
+                strncat(ptr4, &c, 1);
 fclose(filePointer);
-printf("\n");
-
-
+return ptr4;
 }
+
+}}
 
 void catApp(char* catFile, int open){
     char delim[] = " ";

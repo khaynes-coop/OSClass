@@ -4,3 +4,6 @@ lex.yy.c
 tokensBison.tab.h
 tokensBison.tab.c
 test.txt
+*.txt
+File.txt
+File.txt
