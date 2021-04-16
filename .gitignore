@@ -3,3 +3,4 @@ a.out
 lex.yy.c
 tokensBison.tab.h
 tokensBison.tab.c
+test.txt

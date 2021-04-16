@@ -637,6 +637,7 @@ char* wc(char* input) {
   char delim[] = " ";
   char* ptr1 = strtok(newInput, delim);
   char* returnstring;
+  returnstring = malloc(sizeof(node_t));
   ptr1 = strtok(NULL, delim);
   while (ptr1 != NULL)
   {
@@ -741,13 +742,13 @@ strcat(returnstring, buf);
       else
         {
           sprintf(buf, "%d", lines);
-strcat(returnstring, buf);
+          strcat(returnstring, buf);
           strcat(returnstring, " ");
           sprintf(buf, "%d", words);
-strcat(returnstring, buf);
+          strcat(returnstring, buf);
           strcat(returnstring, " ");
           sprintf(buf, "%d", chars);
-strcat(returnstring, buf);
+          strcat(returnstring, buf);
           strcat(returnstring, " ");
           strcat(returnstring, ptr1);
           strcat(returnstring, "\n");
@@ -994,7 +995,7 @@ char **array = (char**)malloc(numBar * sizeof(char*));
    char* currVal;
    char* prevVal;
 for(int i = 0; i < numBar; i++){
-if(strncmp("echo", array[i], 4))
+//if(strncmp("echo", array[i], 4))
 
 
 }
