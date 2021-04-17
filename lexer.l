@@ -60,7 +60,6 @@ rev[ ].*                                            { yylval.sval = strdup(yytex
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }
-[A-Za-z0-9.]*                                   { yylval.sval = strdup(yytext); return WORDS; }
 {DIGIT}+|{DIGIT}*"."{DIGIT}+                    { yylval.number = atoi(yytext); return NUMBER; }
 {META}                                          { return META; }
 

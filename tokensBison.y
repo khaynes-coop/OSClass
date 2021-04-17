@@ -28,8 +28,8 @@
   char* cd(char* input);
   char* cde();
   void UnSetEnv(char* input, int pass);
-  void aliasFun(char* toAlias, int pass);
-  void printAlias(node_t* head);
+  char* aliasFun(char* toAlias, int pass);
+  char* printAlias(node_t* head);
   void assignAlias(node_t** head, char* name, char* word);
   void removeAlias(node_t** head, char* name);
   void unAssignAlias(node_t** head, char* name);
@@ -127,10 +127,10 @@ STMT:
   | UNSETENVP               { UnSetEnv( $1, 1 ); }
   | PRINTENV                { printenv(); }
   | CD                      { cd( $1 ); }
-  | ALIAS                   { aliasFun( $1 , 0); }
-  | ALIASA                  { aliasFun( $1 , 1); }
-  | ALIASP                  { aliasFun( $1 , -1); }
-  | ALIASC                  { aliasFun( $1 , -2); }
+  | ALIAS                   { char* print = aliasFun( $1 , 0); printf("%s", print);}
+  | ALIASA                  { char* print = aliasFun( $1 , 1); printf("%s", print); }
+  | ALIASP                  { char* print = aliasFun( $1 , -1); printf("%s", print); }
+  | ALIASC                  { char* print = aliasFun( $1 , -2); printf("%s", print); }
   | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
   | CDE                     { cde(); }
   | LS                      { char* p = ls( $1 ); printf("%s\n", p); }
@@ -241,8 +241,9 @@ void UnSetEnv(char* input, int pass){
     unsetenv(ptr2);
 }
 
-void aliasFun(char* toAlias, int pass){
-
+char* aliasFun(char* toAlias, int pass){
+char* ptr4;
+ptr4 = malloc(sizeof(char*) * 400);
   char* delim;
   char* ptr1;
   char* ptr2;
@@ -267,25 +268,37 @@ void aliasFun(char* toAlias, int pass){
     ptr1 = strtok(toAlias, delim);
     ptr2 = strtok(NULL, delim);
     ptr3 = strtok(NULL, "/0");}
+
     if(ptr2 == NULL && ptr3 == NULL){
-    printAlias( aliasHead);
+    ptr4 = printAlias( aliasHead);
+
     }
+
     else if(ptr2 != NULL && ptr3 != NULL){
     if(aliasLoop(&aliasHead, ptr2, ptr3) == 0){
-    assignAlias(&aliasHead, ptr2, ptr3);}
-    else{printf("Name may cause an infinite loop\n");}
+    assignAlias(&aliasHead, ptr2, ptr3);
+    strcat(ptr4, "\n");}
+    else{strcat(ptr4, "Name may cause an infinite loop\n");}
     }
     else{
-    printf("too many/few arguments\n");
+    strcat(ptr4, "too many/few arguments\n");
     }
+    return ptr4;
 }
 
-void printAlias(node_t* head){
+char* printAlias(node_t* head){
+char* ptr4;
+ptr4 = malloc(sizeof(char*) * 400);
     node_t* current = head;
     while (current != NULL){
-        printf("alias %s='%s'\n", current->alias, current->val); //prints out the aliases by looping
+    strcat(ptr4, current->alias);
+    strcat(ptr4, " = ");
+    strcat(ptr4, current->val);
+    strcat(ptr4, "\n");
+        //printf("alias %s='%s'\n", current->alias, current->val); //prints out the aliases by looping
         current = current->next;
     }
+    return ptr4;
 }
 
 void assignAlias(node_t** head, char* alias, char* val) {
