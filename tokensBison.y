@@ -298,7 +298,7 @@ ptr4 = malloc(sizeof(char*) * 400);
     node_t* current = head;
     while (current != NULL){
     strcat(ptr4, current->alias);
-    strcat(ptr4, " = ");
+    strcat(ptr4, "=");
     strcat(ptr4, current->val);
     strcat(ptr4, "\n");
         //printf("alias %s='%s'\n", current->alias, current->val); //prints out the aliases by looping
@@ -966,7 +966,8 @@ FILE *fp = fopen(file, "r");
 
 void sortfile(char **array, int linecount){
     int i, j;
-    char t[4096];
+    char* t;
+    t = malloc(sizeof(char*) * linecount);
     for(i=1; i < linecount;i++)
     {
         for(j=1; j < linecount; j++)
@@ -979,6 +980,7 @@ void sortfile(char **array, int linecount){
             }
         }
     }
+    free(t);
 }
 
 char* date()
@@ -989,35 +991,39 @@ char* date()
 
 char* sortNotFile(char* input){
 
-char tempstr[strlen(input) + 1];
-strncpy(tempstr, input, sizeof(tempstr));
-//printf("%s", input);
+char* tempstr = input;
+//printf("%s" , tempstr);
     char* delim = "\n";
     unsigned long int numNewLine = 0;
-    char* token = strtok(tempstr, delim);
 
-    while(token != NULL){
-    numNewLine = numNewLine + 1;
-    token = strtok(NULL, delim);
+    for(int m = 0; tempstr[m]; m++){
+    //printf("%c", tempstr[m]);
+    if(tempstr[m] == '\n') {
+            numNewLine++;
+        }
+
     }
     if(numNewLine == 0){return input;}
-
+//printf("%lu %s\n", numNewLine, input);
     char **array = (char**)malloc(numNewLine * sizeof(char*));
     char* singleline;
          singleline = strtok(input, delim);
     for(int i = 0; i < numNewLine; i++){
+    //printf("Line %s\n", singleline);
     array[i] = singleline;
+    //printf("Array %s\n", array[i]);
     singleline = strtok(NULL, delim);
     }
-
+char* ptr4;
+  ptr4 = malloc(sizeof(char*) * 5000);
 sortfile(array, numNewLine);
-strcpy(input, array[0]);
-        for(int i = 1; i < numNewLine; i++){
-        strcat(input, "\n");
-        strcat(input, array[i]);
-        }
+for(int i = 0; i < numNewLine; i++){
 
-        return input;
+        strcat(ptr4, array[i]);
+        strcat(ptr4, "\n");
+        }
+//printf("%s\n", ptr4);
+        return ptr4;
 
 }
 
@@ -1045,39 +1051,58 @@ char **array = (char**)malloc(numBar * sizeof(char*));
     array[i]++;
            //printf("%lu: %s\n", numBar, array[i]);
             }
-   char currVal[4096];
-   char prevVal[4096];
+   char currVal[5096];
+   char prevVal[5096];
    //printf("%s\n",  array[0]);
+
 for(int i = 0; i < numBar; i++){
 
+char* p;
+   p = malloc(sizeof(char*) * sizeof(prevVal));
+
 strncpy(prevVal, currVal, sizeof(prevVal));
-if(strncmp("echo ", array[i], 4) == 0){
-char* print = echo(array[i], 1);
-strncpy(currVal, print, sizeof(currVal));
+if(strncmp(currVal, "Error ", 4) == 0){ break;}
+if(strncmp(array[i], "sort ", 4) == 0){
+  char tmp[] = "sort ";
+  char* t;
+  //printf("Here1\n");
+  t = malloc(sizeof(prevVal) + sizeof(tmp) + 4);
+  strcat(t, tmp);
+  strcat(t, prevVal);
+  strcpy(p, commandChecker(t));
+  free(t);
+  //printf("P %s", p);
 }
-else if(strncmp("ls ", array[i], 3) == 0){
-char* print = lse();
-//printf("%s", print);
-strncpy(currVal, print, sizeof(currVal));
+else if(strncmp(array[i], "grep ", 4) == 0){
+  char* tmp = array[i];
+
+  char* t;
+  t = malloc(sizeof(prevVal) * sizeof(tmp) * 4);
+  strcat(t, tmp);
+  strcat(t, " ");
+  strcat(t, prevVal);
+  strcpy(p, commandChecker(t));
+  free(t);
+
 }
-else if(strncmp("sort", array[i], 4) == 0){
-strncpy(currVal, sortNotFile(prevVal), sizeof(currVal));
-}
-else if(strncmp("wc ", array[i], 2) == 0){
-char* print = wc(array[i]);
-strncpy(currVal, print, sizeof(currVal));
-}
+else{p = commandChecker(array[i]);}
+strncpy(currVal, p, sizeof(currVal));
+//printf("%s\n", currVal);
+//printf("%s\n", currVal);
+free(p);
 
 }
 
 printf("%s\n", currVal);
+//free(currVal);
+
 }
 
 char* grep(char* input)
 {
   FILE *f;
   char* returnstring;
-  returnstring = malloc(sizeof(node_t));
+  returnstring = malloc(sizeof(char*) * sizeof(input) * 10);
   char delim[] = " ";
   char* ptr1 = strtok(input, delim);
   char* ptr2 = strtok(NULL, delim);
@@ -1104,6 +1129,7 @@ char* grep(char* input)
     }
     ptr1 = strtok(NULL, delim);
   }
+  printf("%s", returnstring);
   return(returnstring);
 }
 
@@ -1135,13 +1161,14 @@ char* rev(char* input)
 
 char* commandChecker(char* input){
 char* checkThis;
+//printf("Here2\n");
 checkThis = malloc(sizeof(input));
 strcpy(checkThis, input);
 char* ptr1 = strtok(checkThis, " ");
 char* ptr2 = strtok(NULL, " ");
-//printf("$1 is %s, $2 is %s", ptr1, ptr2);
+//printf("$1 is %s, $2 is %s\n", ptr1, ptr2);
 char* ptr4;
-  ptr4 = malloc(sizeof(char*) * 800);
+  ptr4 = malloc(sizeof(char*) * sizeof(*ptr2) + sizeof(*ptr1));
 if(strncmp("echo ", ptr1, 4) == 0){
   //printf("%s", input);
   //strcpy(ptr4, input);
@@ -1152,12 +1179,29 @@ else if(strncmp("alias ", ptr1, 5) == 0){
   //strcpy(ptr4, input);
   strcpy(ptr4, aliasFun(input, 0));
   }
+ else if(strncmp("grep ", ptr1, 4) == 0){
+   //printf("%s", input);
+   //strcpy(ptr4, input);
+   strcpy(ptr4, grep(input));
+   }
   else if(strncmp("cat ", ptr1, 3) == 0){
      //printf("%s", input);
      //strcpy(ptr4, input);
      strcpy(ptr4, catDecode(input));
      }
-  else{strcpy(ptr4, input);}
+     else if(strncmp("sort ", ptr1, 4) == 0){
+     //printf("Here3\n");
+          //printf("%s", input);
+          //strcpy(ptr4, input);
 
+          strcpy(ptr4, sortNotFile(ptr2));
+          }
+      else if(strncmp("ls ", ptr1, 2) == 0){
+                //printf("%s", input);
+                //strcpy(ptr4, input);
+                strcpy(ptr4, lse());
+                }
+  else{strcpy(ptr4, input);}
+//printf("Ptr 4 %s\n", ptr4);
 return ptr4;
 }
