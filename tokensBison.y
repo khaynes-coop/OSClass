@@ -23,7 +23,7 @@
 
  //functions
   void yyerror(const char *s);
-  void printenv();
+  char* printenv();
   void SetEnv(char* input, int pass);
   char* cd(char* input);
   char* cde();
@@ -125,7 +125,7 @@ STMT:
   | SETENVQ                 { SetEnv( $1, 1 ); }
   | UNSETENV                { UnSetEnv( $1, 0 ); }
   | UNSETENVP               { UnSetEnv( $1, 1 ); }
-  | PRINTENV                { printenv(); }
+  | PRINTENV                { char* print = printenv(); printf("%s", print);}
   | CD                      { cd( $1 ); }
   | ALIAS                   { char* print = aliasFun( $1 , 0); printf("%s", print);}
   | ALIASA                  { char* print = aliasFun( $1 , 1); printf("%s", print); }
@@ -158,11 +158,16 @@ STMT:
     exit(1);
   }
 
-  void printenv(){
+  char* printenv(){
+  char* ptr4;
+  ptr4 = malloc(sizeof(char*) * 800);
     char **var;
-    for(var = environ; *var!=NULL;++var) {
-          printf("%s\n",*var);
+    for(var = environ; *var!=NULL;var++) {
+    strcat(ptr4, *var);
+    strcat(ptr4, "\n");
+          //printf("%s\n",*var);
     }
+    return ptr4;
   }
 
 void SetEnv(char* input, int pass){
