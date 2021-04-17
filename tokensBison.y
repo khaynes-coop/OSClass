@@ -23,6 +23,7 @@
 
  //functions
   void yyerror(const char *s);
+  char* commandChecker(char* input);
   char* printenv();
   void SetEnv(char* input, int pass);
   char* cd(char* input);
@@ -532,9 +533,10 @@ void aliasChecker( node_t** head, char* alias){
 
 node_t* current = *head;
     node_t* prev = NULL;
+    char* print = run_command(alias);
     while (1) {
-        if (current == NULL){ char* print = run_command(alias); aliasFunctionsPrint(print); return;}//print/execute alias
-        if (strcmp(current->alias, alias) == 0){ aliasChecker(head, current->val); return;}
+        if (current == NULL){  aliasFunctionsPrint(print); return;}//print/execute alias
+        if (strcmp(current->alias, print) == 0){ aliasChecker(head, current->val); return;}
         prev = current;
         current = current->next;
     }
@@ -573,9 +575,12 @@ ptr4 = malloc(sizeof(char*) * 200);
     if(ptr2 != NULL && ptr3 == NULL){
     ptr4 = catFileOpenReadClose(ptr2);
     }
-    if(ptr2 != NULL && ptr3 != NULL){
+    else if(ptr2 != NULL && ptr3 != NULL){
         ptr4 = catOpenReadClose(ptr2, ptr3);
         }
+        else {
+                ptr4 = "too many/few args";
+                }
 
         return ptr4;
 }
@@ -658,8 +663,9 @@ fclose(f1);
 }}
 
 void aliasFunctionsPrint(char* aliasString){
-
-printf("%s\n", aliasString);
+char* toprint = run_command(aliasString);
+char* print = commandChecker(toprint);
+printf("%s\n", print);
 }
 
 char* pwd() {
@@ -1125,4 +1131,33 @@ char* rev(char* input)
   }
   fclose(f);
   return(returnstring);
+}
+
+char* commandChecker(char* input){
+char* checkThis;
+checkThis = malloc(sizeof(input));
+strcpy(checkThis, input);
+char* ptr1 = strtok(checkThis, " ");
+char* ptr2 = strtok(NULL, " ");
+//printf("$1 is %s, $2 is %s", ptr1, ptr2);
+char* ptr4;
+  ptr4 = malloc(sizeof(char*) * 800);
+if(strncmp("echo ", ptr1, 4) == 0){
+  //printf("%s", input);
+  //strcpy(ptr4, input);
+  strcpy(ptr4, echo(input, 1));
+  }
+else if(strncmp("alias ", ptr1, 5) == 0){
+  //printf("%s", input);
+  //strcpy(ptr4, input);
+  strcpy(ptr4, aliasFun(input, 0));
+  }
+  else if(strncmp("cat ", ptr1, 3) == 0){
+     //printf("%s", input);
+     //strcpy(ptr4, input);
+     strcpy(ptr4, catDecode(input));
+     }
+  else{strcpy(ptr4, input);}
+
+return ptr4;
 }
