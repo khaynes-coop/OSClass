@@ -1085,7 +1085,6 @@ if(strncmp(array[i], "sort ", 4) == 0){
 }
 else if(strncmp(array[i], "grep ", 4) == 0){
   char* tmp = array[i];
-
   char* t;
   t = malloc(sizeof(prevVal) * sizeof(tmp) * 4);
   strcat(t, tmp);
@@ -1093,7 +1092,16 @@ else if(strncmp(array[i], "grep ", 4) == 0){
   strcat(t, prevVal);
   strcpy(p, commandChecker(t));
   free(t);
-
+}
+else if(strncmp(array[i], "rev ", 3) == 0){
+  char* tmp = array[i];
+  char* t;
+  t = malloc(sizeof(prevVal) * sizeof(tmp) * 4);
+  strcat(t, tmp);
+  strcat(t, " ");
+  strcat(t, prevVal);
+  strcpy(p, commandChecker(t));
+  free(t);
 }
 else{p = commandChecker(array[i]);}
 strncpy(currVal, p, sizeof(currVal));
@@ -1171,24 +1179,26 @@ char* rev(char* input)
 
 char* commandChecker(char* input){
 char* checkThis;
-//printf("Here2\n");
+
+
 checkThis = malloc(sizeof(input));
 strcpy(checkThis, input);
 char* ptr1 = strtok(checkThis, " ");
 char* ptr2 = strtok(NULL, " ");
-//printf("$1 is %s, $2 is %s\n", ptr1, ptr2);
+
+
 char* ptr4;
+
   ptr4 = malloc(sizeof(char*) * sizeof(*ptr2) + sizeof(*ptr1));
 if(strncmp("echo ", ptr1, 4) == 0){
-  //printf("%s", input);
-  //strcpy(ptr4, input);
+
   strcpy(ptr4, echo(input, 1));
   }
+
 else if(strncmp("alias ", ptr1, 5) == 0){
-  //printf("%s", input);
-  //strcpy(ptr4, input);
   strcpy(ptr4, aliasFun(input, 0));
   }
+
   else if(strncmp("printenv ", ptr1, 7) == 0){
     //printf("%s", input);
     //strcpy(ptr4, input);
@@ -1205,12 +1215,11 @@ else if(strncmp("alias ", ptr1, 5) == 0){
      strcpy(ptr4, catDecode(input));
      }
      else if(strncmp("sort ", ptr1, 4) == 0){
-     //printf("Here3\n");
-          //printf("%s", input);
-          //strcpy(ptr4, input);
-
-          strcpy(ptr4, sortNotFile(ptr2));
-          }
+  strcpy(ptr4, sortNotFile(ptr2));
+}
+else if(strncmp("rev ", ptr1, 3) == 0){
+  strcpy(ptr4, rev(input));
+}
       else if(strncmp("ls ", ptr1, 2) == 0){
                 //printf("%s", input);
                 //strcpy(ptr4, input);
