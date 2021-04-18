@@ -687,7 +687,8 @@ char* pwd() {
     return cwd;
 }
 
-char* wc(char* input) {
+char* wc(char* oldinput) {
+  char* input = run_command(oldinput);
   char* buf;
   char* newInput = run_command(input);
   int lflag = 0, wflag = 0, cflag = 0;
@@ -1119,8 +1120,9 @@ printf("%s\n", currVal);
 
 }
 
-char* grep(char* input)
+char* grep(char* oldinput)
 {
+  char* input = run_command(oldinput);
   FILE *f;
   char* returnstring;
   returnstring = malloc(4000);
@@ -1165,8 +1167,9 @@ char* grep(char* input)
   return(returnstring);
 }
 
-char* rev(char* input)
+char* rev(char* oldinput)
 {
+  char* input = run_command(oldinput);
   char* returnstring;
   FILE *f;
   returnstring = malloc(10000);
