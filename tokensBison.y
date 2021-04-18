@@ -128,7 +128,7 @@ STMT:
   | GREETING                { printf("bison found a Greeting: %s\n", $1);  printDollarSign();}
   | NAME                    { printf("bison found a Name: %s\n", $1); printDollarSign();}
   | META                    { printf("bison found a Meta Val: %s\n", $1); printDollarSign();}
-  | EXITTOKEN               { printf("bison found an Exit Token\n"); exit(1); printDollarSign();}
+  | EXITTOKEN               { printf("bison found a bye! <3\n"); exit(1); printDollarSign();}
   | SETENV                  { SetEnv( $1, 0 ); printDollarSign();}
   | SETENVQ                 { SetEnv( $1, 1 ); printDollarSign();}
   | UNSETENV                { UnSetEnv( $1, 0 ); printDollarSign();}
@@ -157,7 +157,7 @@ STMT:
   | DATE                    { date(); printDollarSign();}
   | PIPPET                  { pipeFunction( $1 ); printDollarSign();}
   | GREP                    { grep( $1); printDollarSign();}
-  | REV                     { rev( $1 ); printDollarSign();}
+  | REV                     { char* print = rev( $1 ); printf("%s\n", print); printDollarSign();}
   | WRITEOVER               { writeAppend($1, 1); printDollarSign();}
   | APPENDTO                { writeAppend($1, 0); printDollarSign();}
   ;
@@ -1091,6 +1091,18 @@ else if(strncmp(array[i], "grep ", 4) == 0){
   strcat(t, tmp);
   strcat(t, " ");
   strcat(t, prevVal);
+  //printf("%s/n", t);
+  strcpy(p, commandChecker(t));
+  free(t);
+}
+else if(strncmp(array[i], "rev ", 3) == 0){
+  char* tmp = array[i];
+  char* t;
+  t = malloc(sizeof(prevVal) * sizeof(tmp) * 4);
+  strcat(t, tmp);
+  strcat(t, " ");
+  strcat(t, prevVal);
+  //printf("%s/n", t);
   strcpy(p, commandChecker(t));
   free(t);
 }
