@@ -692,7 +692,7 @@ char* wc(char* input) {
   char* newInput = run_command(input);
   int lflag = 0, wflag = 0, cflag = 0;
   int totlines = 0, totwords = 0, totchars = 0, fcount = 0;
-  char delim[] = " ";
+  char delim[] = " \n\t";
   char* ptr1 = strtok(newInput, delim);
   char* returnstring;
   returnstring = malloc(sizeof(node_t));
@@ -1114,8 +1114,18 @@ char* grep(char* input)
   returnstring = malloc(4000);
   char delim[] = " \n\t";
   strcat(returnstring, "\n");
-  char* ptr1 = strtok(input, delim);
-  char* ptr2 = strtok(NULL, delim);
+  char* ptr1;
+  char* ptr2;
+  if (strstr(input, "\""))
+  {
+    ptr1 = strtok(input, delim);
+    ptr2 = strtok(NULL, "\"");
+  }
+  else
+  {
+    ptr1 = strtok(input, delim);
+    ptr2 = strtok(NULL, delim);
+  }
   ptr1 = strtok(NULL, delim);
   while (ptr1 != NULL)
   {
@@ -1129,7 +1139,7 @@ char* grep(char* input)
       line = malloc(sizeof(node_t));
       while(fgets(line, sizeof(line), f) != NULL)
       {
-        if (line != NULL && strstr(line, ptr2) != NULL)
+        if (line != NULL && strstr(line, ptr2))
         {
          strcat(returnstring, ptr1);
          break;
@@ -1139,6 +1149,7 @@ char* grep(char* input)
     }
     ptr1 = strtok(NULL, delim);
   }
+
   return(returnstring);
 }
 
@@ -1173,6 +1184,7 @@ char* rev(char* input)
     }
     ptr2 = strtok(NULL, delim);
   }
+  printf(returnstring);
   return(returnstring);
 }
 
