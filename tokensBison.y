@@ -1204,7 +1204,7 @@ char* commandChecker(char* input){
 char* checkThis;
 
 
-checkThis = malloc(sizeof(input));
+checkThis = malloc(5096);
 strcpy(checkThis, input);
 char* ptr1 = strtok(checkThis, " ");
 char* ptr2 = strtok(NULL, " ");
