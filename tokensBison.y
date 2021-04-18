@@ -1173,7 +1173,6 @@ char* rev(char* input)
     }
     ptr2 = strtok(NULL, delim);
   }
-  printf(returnstring);
   return(returnstring);
 }
 
