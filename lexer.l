@@ -40,12 +40,15 @@ alias[ ]${META}[a-zA-Z0-9]+{META}[ ][a-zA-Z0-9]+    { yylval.sval = strdup(yytex
 alias[ ][a-zA-Z0-9]*[ ]{QUOTE}{NOTECHOS}*{QUOTE}    { yylval.sval = strdup(yytext); return ALIASA;}
 unalias[ ]${META}[a-zA-Z0-9]+{META}                 { yylval.sval = strdup(yytext); return UNALIAS;}
 unalias[ ][a-zA-Z0-9]+                              { yylval.sval = strdup(yytext); return UNALIAS;}
-echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                    { yylval.sval = strdup(yytext); return ECHOS;};
-echo[ ]{NOTECHOS}*                                  { yylval.sval = strdup(yytext); return ECHOA;};
+echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}[ ]>[ ][a-zA-Z0-9]+.txt { yylval.sval = strdup(yytext); return ECHOWRITE;};
+echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}[ ]>>[ ][a-zA-Z0-9]+.txt { yylval.sval = strdup(yytext); return ECHOAPPEND;};
+
 cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytext); return CAT;};
 cat[ ]>[a-zA-Z0-9]+.txt                             { yylval.sval = strdup(yytext); return CATNEW;};
 cat[ ][a-zA-Z0-9]+.txt[ ]>>[ ][a-zA-Z0-9]+.txt      { yylval.sval = strdup(yytext); return CATAPP;};
 cat[ ][a-zA-Z0-9]+.txt[ ]>[ ][a-zA-Z0-9]+.txt       { yylval.sval = strdup(yytext); return CATW;};
+echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                    { yylval.sval = strdup(yytext); return ECHOS;};
+echo[ ]{NOTECHOS}*                                  { yylval.sval = strdup(yytext); return ECHOA;};
 
 pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
 ls[ ][a-zA-Z.\/]*                                     { yylval.sval = strdup(yytext); return LS;}
@@ -57,6 +60,8 @@ date                                                { yylval.sval = strdup(yytex
 
 grep[ ].*[ ].*                                      { yylval.sval = strdup(yytext); return GREP;}
 rev[ ].*                                            { yylval.sval = strdup(yytext); return REV;}
+[a-zA-Z0-9]+[ ]>[ ][a-zA-Z0-9]+.txt                 { yylval.sval = strdup(yytext); return WRITEOVER;};
+[a-zA-Z0-9]+[ ]>>[ ][a-zA-Z0-9]+.txt                 { yylval.sval = strdup(yytext); return APPENDTO;};
 
 [A-Z][a-z]*                                     { yylval.sval = strdup(yytext); return NAME; }
 [a-z]+                                          { yylval.sval = strdup(yytext); return WORDS; }

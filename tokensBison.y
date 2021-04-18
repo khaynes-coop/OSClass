@@ -56,6 +56,8 @@
     char* pipeFunction(char* pipesBars);
   char* grep(char* input);
   char* rev(char* input);
+  char* writeAppend(char* input, int type);
+  char* echoFile(char* input, int type);
 %}
 
 
@@ -64,9 +66,13 @@
 
 
 
-%token NUMBER WORDS GREETING NAME META NEWLINE EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT DATE PIPPET GREP REV
+%token NUMBER WORDS ECHOWRITE ECHOAPPEND GREETING NAME META NEWLINE WRITEOVER APPENDTO EXITTOKEN SETENV SETENVQ PRINTENV UNSETENV UNSETENVP ALIASC CD CDE ALIAS RUN UNALIAS LS LSE ECHOS ECHOA CAT CATNEW CATAPP CATW ALIASA ALIASP PWD WC SORT DATE PIPPET GREP REV
 
 %type <number> NUMBER
+%type <sval> ECHOWRITE
+%type <sval> ECHOAPPEND
+%type <sval> WRITEOVER
+%type <sval> APPENDTO
 %type <sval> SORT
 %type <sval> PIPPET
 %type <sval> NEWLINE
@@ -136,6 +142,8 @@ STMT:
   | CDE                     { cde(); }
   | LS                      { char* p = ls( $1 ); printf("%s\n", p); }
   | LSE                     { char* p = lse(); printf("%s\n", p); }
+  | ECHOWRITE               { echoFile($1, 1);}
+  | ECHOAPPEND              { echoFile($1, 0);}
   | ECHOS                   { char* p = echo( $1 , 0); printf("%s\n", p);}
   | ECHOA                   { char* p = echo( $1 , 1); printf("%s\n", p); }
   | CAT                     { char* print = catDecode( $1 ); printf("%s\n", print);}
@@ -149,6 +157,8 @@ STMT:
   | PIPPET                  { pipeFunction( $1 ); }
   | GREP                    { grep( $1); }
   | REV                     { rev( $1 ); }
+  | WRITEOVER               { writeAppend($1, 1); }
+  | APPENDTO                { writeAppend($1, 0); }
   ;
 
 
@@ -547,7 +557,7 @@ node_t* current = *head;
 char* catFileOpenReadClose(char* file){
 FILE *filePointer;
 char* ptr4;
-ptr4 = malloc(sizeof(char*) * 200);
+ptr4 = malloc(sizeof(char*) * 2000);
 if((filePointer = fopen(file, "r") )== NULL){
 ptr4 ="no such filename\n";
 return ptr4;
@@ -1179,6 +1189,11 @@ else if(strncmp("alias ", ptr1, 5) == 0){
   //strcpy(ptr4, input);
   strcpy(ptr4, aliasFun(input, 0));
   }
+  else if(strncmp("printenv ", ptr1, 7) == 0){
+    //printf("%s", input);
+    //strcpy(ptr4, input);
+    strcpy(ptr4, printenv());
+    }
  else if(strncmp("grep ", ptr1, 4) == 0){
    //printf("%s", input);
    //strcpy(ptr4, input);
@@ -1205,3 +1220,51 @@ else if(strncmp("alias ", ptr1, 5) == 0){
 //printf("Ptr 4 %s\n", ptr4);
 return ptr4;
 }
+
+char* writeAppend(char* input, int type){
+char* ptr1;
+        char* ptr2;
+        char* ptr3;
+         char* delim = " ";
+         char* c;
+         ptr1 = strtok(input, delim);
+         ptr2 = strtok(NULL, delim);
+         ptr3 = strtok(NULL, "/0");
+
+         char* ptr4 = commandChecker(ptr1);
+
+         if(type == 1){ c = "w";}
+         else{c = "a";}
+         FILE* f;
+if((f = fopen(ptr3, c) ) != NULL){
+    fputs(ptr4, f);
+}
+fclose(f);
+return ptr3;
+
+}
+
+
+  char* echoFile(char* input, int type){
+  char delim[] = "\"";
+  char* ptr1 = strtok(input, delim);
+      char* ptr2 = strtok(NULL, delim);
+      char* ptr3 = strtok(NULL, " ");
+      char* ptr4 = strtok(NULL, "\0");
+      char* c;
+      //printf("$1 is %s, $2 is %s\n", ptr1, ptr2);
+      //printf("$1 is %s, $2 is %s\n", ptr3, ptr4);
+      strcat(ptr1, ptr2);
+      char* p = echo( ptr1, 1);
+ //printf("P is %s", p);
+
+      if(type == 1){ c = "w";}
+               else{c = "a";}
+               FILE* f;
+      if((f = fopen(ptr4, c) ) != NULL){
+          fputs(p, f);
+      }
+      fclose(f);
+      return ptr4;
+
+  }
