@@ -1027,7 +1027,8 @@ char* tempstr = input;
     }
 char* ptr4;
   ptr4 = malloc(sizeof(char*) * 5000);
-sortfile(array, numNewLine);
+if(strncmp(array[0], ".", 1) != 0){
+sortfile(array, numNewLine);}
 for(int i = 0; i < numNewLine; i++){
 
         strcat(ptr4, array[i]);
@@ -1096,6 +1097,17 @@ else if(strncmp(array[i], "grep ", 4) == 0){
   free(t);
 }
 else if(strncmp(array[i], "rev ", 3) == 0){
+  char* tmp = array[i];
+  char* t;
+  t = malloc(sizeof(prevVal) * sizeof(tmp) * 4);
+  strcat(t, tmp);
+  strcat(t, " ");
+  strcat(t, prevVal);
+  //printf("%s/n", t);
+  strcpy(p, commandChecker(t));
+  free(t);
+}
+else if(strncmp(array[i], "wc ", 2) == 0){
   char* tmp = array[i];
   char* t;
   t = malloc(sizeof(prevVal) * sizeof(tmp) * 4);
@@ -1242,6 +1254,9 @@ else if(strncmp("alias ", ptr1, 5) == 0){
 }
 else if(strncmp("rev ", ptr1, 3) == 0){
   strcpy(ptr4, rev(input));
+}
+else if(strncmp("wc ", ptr1, 2) == 0){
+  strcpy(ptr4, wc(input));
 }
       else if(strncmp("ls ", ptr1, 2) == 0){
                 //printf("%s", input);
