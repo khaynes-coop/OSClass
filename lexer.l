@@ -47,7 +47,7 @@ cat[ ]>[a-zA-Z0-9]+.txt                             { yylval.sval = strdup(yytex
 cat[ ][a-zA-Z0-9]+.txt[ ]>>[ ][a-zA-Z0-9]+.txt      { yylval.sval = strdup(yytext); return CATAPP;}
 cat[ ][a-zA-Z0-9]+.txt[ ]>[ ][a-zA-Z0-9]+.txt       { yylval.sval = strdup(yytext); return CATW;};
 
-pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD}
+pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;}
 ls[ ][a-zA-Z.\/]*                                     { yylval.sval = strdup(yytext); return LS;}
 ls                                                  { yylval.sval = strdup(yytext); return LSE;}
 
