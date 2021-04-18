@@ -44,13 +44,13 @@ echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}[ ]>[ ][a-zA-Z0-9]+.txt { yylval.sval = strdup(y
 echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}[ ]>>[ ][a-zA-Z0-9]+.txt { yylval.sval = strdup(yytext); return ECHOAPPEND;};
 
 cat[ ][a-zA-Z0-9]+.txt[ ]*[a-zA-Z0-9]*{TXT}*        { yylval.sval = strdup(yytext); return CAT;};
-cat[ ]>[a-zA-Z0-9]+.txt                             { yylval.sval = strdup(yytext); return CATNEW;};
-cat[ ][a-zA-Z0-9]+.txt[ ]>>[ ][a-zA-Z0-9]+.txt      { yylval.sval = strdup(yytext); return CATAPP;};
+cat[ ]>[a-zA-Z0-9]+.txt                             { yylval.sval = strdup(yytext); return CATNEW;}
+cat[ ][a-zA-Z0-9]+.txt[ ]>>[ ][a-zA-Z0-9]+.txt      { yylval.sval = strdup(yytext); return CATAPP;}
 cat[ ][a-zA-Z0-9]+.txt[ ]>[ ][a-zA-Z0-9]+.txt       { yylval.sval = strdup(yytext); return CATW;};
 echo[ ]{QUOTE}{NOTQUOTE}*{QUOTE}                    { yylval.sval = strdup(yytext); return ECHOS;};
 echo[ ]{NOTECHOS}*                                  { yylval.sval = strdup(yytext); return ECHOA;};
 
-pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;};
+pwd([ ][a-zA-Z0-9]*)?                               { yylval.sval = strdup(yytext); return PWD;}
 ls[ ][a-zA-Z.\/]*                                     { yylval.sval = strdup(yytext); return LS;}
 ls                                                  { yylval.sval = strdup(yytext); return LSE;}
 
