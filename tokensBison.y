@@ -1091,9 +1091,9 @@ else if(strncmp(array[i], "grep ", 4) == 0){
   strcat(t, tmp);
   strcat(t, " ");
   strcat(t, prevVal);
+  printf(t);
   strcpy(p, commandChecker(t));
   free(t);
-
 }
 else{p = commandChecker(array[i]);}
 strncpy(currVal, p, sizeof(currVal));
@@ -1112,8 +1112,9 @@ char* grep(char* input)
 {
   FILE *f;
   char* returnstring;
-  returnstring = malloc(sizeof(char*) * sizeof(input) * 10);
-  char delim[] = " ";
+  returnstring = malloc(4000);
+  char delim[] = " \n\t";
+  strcat(returnstring, "\n");
   char* ptr1 = strtok(input, delim);
   char* ptr2 = strtok(NULL, delim);
   ptr1 = strtok(NULL, delim);
@@ -1126,46 +1127,54 @@ char* grep(char* input)
         return("Error no such filename\n");
       }
       const char* line;
-      line = malloc(4096);
+      line = malloc(sizeof(node_t));
       while(fgets(line, sizeof(line), f) != NULL)
       {
         if (line != NULL && strstr(line, ptr2) != NULL)
         {
          strcat(returnstring, ptr1);
-         strcat(returnstring, "\n");
+         break;
         }
       }
       fclose(f);
     }
     ptr1 = strtok(NULL, delim);
   }
-  printf("%s", returnstring);
   return(returnstring);
 }
 
 char* rev(char* input)
 {
   char* returnstring;
-  returnstring = malloc(sizeof(node_t));
-  char* ptr1 = strtok(input, " ");
-  char* ptr2 = strtok(NULL, " ");
   FILE *f;
+  returnstring = malloc(10000);
+  char delim[] = " \n\t";
+  char* ptr1 = strtok(input, delim);
+  char* ptr2 = strtok(NULL, delim);
+  while(ptr2 != NULL)
+  {
+    if (strstr(ptr2, ".txt"))
+    {
   if((f = fopen(ptr2, "r")) == NULL)
   {
     return("Error no such filename\n");
   }
   char* temp;
-  temp = malloc(1000);
-  while (fgets(temp, 1000, f) != NULL)
+  temp = malloc(10000);
+  while (fgets(temp, 10000, f) != NULL)
   {
     const char* line = temp;
     int len = strlen(line);
-    for (int i = len-1; i > 0; i--) {
+    for (int i = len-1; i > -1; i--) {
         strncat(returnstring, &line[i], 1);
     }
-    strcat(returnstring, "\n");
   }
+  strcat(returnstring, "\n");
   fclose(f);
+    }
+    ptr2 = strtok(NULL, delim);
+  }
+  printf(returnstring);
   return(returnstring);
 }
 
