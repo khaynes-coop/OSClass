@@ -58,6 +58,7 @@
   char* rev(char* input);
   char* writeAppend(char* input, int type);
   char* echoFile(char* input, int type);
+  void printDollarSign(){printf("$:");}
 %}
 
 
@@ -122,43 +123,43 @@ STMTS  :
  | STMT STMTS
 ;
 STMT:
-  | NUMBER                  { printf("bison found a Number: %d\n", $1); }
-  | WORDS                   { aliasChecker( &aliasHead, $1); }
-  | GREETING                { printf("bison found a Greeting: %s\n", $1);  }
-  | NAME                    { printf("bison found a Name: %s\n", $1); }
-  | META                    { printf("bison found a Meta Val: %s\n", $1); }
-  | EXITTOKEN               { printf("bison found an Exit Token\n"); exit(1); }
-  | SETENV                  { SetEnv( $1, 0 ); }
-  | SETENVQ                 { SetEnv( $1, 1 ); }
-  | UNSETENV                { UnSetEnv( $1, 0 ); }
-  | UNSETENVP               { UnSetEnv( $1, 1 ); }
-  | PRINTENV                { char* print = printenv(); printf("%s", print);}
-  | CD                      { cd( $1 ); }
-  | ALIAS                   { char* print = aliasFun( $1 , 0); printf("%s", print);}
-  | ALIASA                  { char* print = aliasFun( $1 , 1); printf("%s", print); }
-  | ALIASP                  { char* print = aliasFun( $1 , -1); printf("%s", print); }
-  | ALIASC                  { char* print = aliasFun( $1 , -2); printf("%s", print); }
-  | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); }
-  | CDE                     { cde(); }
-  | LS                      { char* p = ls( $1 ); printf("%s\n", p); }
-  | LSE                     { char* p = lse(); printf("%s\n", p); }
-  | ECHOWRITE               { echoFile($1, 1);}
-  | ECHOAPPEND              { echoFile($1, 0);}
-  | ECHOS                   { char* p = echo( $1 , 0); printf("%s\n", p);}
-  | ECHOA                   { char* p = echo( $1 , 1); printf("%s\n", p); }
-  | CAT                     { char* print = catDecode( $1 ); printf("%s\n", print);}
-  | CATNEW                  { char* print =catNew( $1 ); printf("%s\n", print);}
-  | CATAPP                  { catApp( $1, 0 ); }
-  | CATW                    { catApp( $1, 1 ); }
-  | PWD                     { pwd(); }
-  | WC                      { char* print = wc( $1 ); printf("%s\n", print);}
-  | SORT                    { char** print = sortStrings( $1 ); int j = atoi(print[0]); if (j > 0){j++; for(int c = 1; c < j; c++) printf("%s", print[c]); printf("\n");} else printf("%s\n",  print[0]);}
-  | DATE                    { date(); }
-  | PIPPET                  { pipeFunction( $1 ); }
-  | GREP                    { grep( $1); }
-  | REV                     { rev( $1 ); }
-  | WRITEOVER               { writeAppend($1, 1); }
-  | APPENDTO                { writeAppend($1, 0); }
+  | NUMBER                  { printf("bison found a Number: %d\n", $1); printDollarSign();}
+  | WORDS                   { aliasChecker( &aliasHead, $1); printDollarSign();}
+  | GREETING                { printf("bison found a Greeting: %s\n", $1);  printDollarSign();}
+  | NAME                    { printf("bison found a Name: %s\n", $1); printDollarSign();}
+  | META                    { printf("bison found a Meta Val: %s\n", $1); printDollarSign();}
+  | EXITTOKEN               { printf("bison found an Exit Token\n"); exit(1); printDollarSign();}
+  | SETENV                  { SetEnv( $1, 0 ); printDollarSign();}
+  | SETENVQ                 { SetEnv( $1, 1 ); printDollarSign();}
+  | UNSETENV                { UnSetEnv( $1, 0 ); printDollarSign();}
+  | UNSETENVP               { UnSetEnv( $1, 1 ); printDollarSign();}
+  | PRINTENV                { char* print = printenv(); printf("%s", print); printDollarSign();}
+  | CD                      { cd( $1 ); printDollarSign();}
+  | ALIAS                   { char* print = aliasFun( $1 , 0); printf("%s", print); printDollarSign();}
+  | ALIASA                  { char* print = aliasFun( $1 , 1); printf("%s", print); printDollarSign();}
+  | ALIASP                  { char* print = aliasFun( $1 , -1); printf("%s", print); printDollarSign();}
+  | ALIASC                  { char* print = aliasFun( $1 , -2); printf("%s", print); printDollarSign();}
+  | UNALIAS                 { unAssignAlias(&aliasHead,  $1 ); printDollarSign();}
+  | CDE                     { cde(); printDollarSign();}
+  | LS                      { char* p = ls( $1 ); printf("%s\n", p); printDollarSign();}
+  | LSE                     { char* p = lse(); printf("%s\n", p); printDollarSign();}
+  | ECHOWRITE               { echoFile($1, 1); printDollarSign();}
+  | ECHOAPPEND              { echoFile($1, 0); printDollarSign();}
+  | ECHOS                   { char* p = echo( $1 , 0); printf("%s\n", p); printDollarSign();}
+  | ECHOA                   { char* p = echo( $1 , 1); printf("%s\n", p); printDollarSign();}
+  | CAT                     { char* print = catDecode( $1 ); printf("%s\n", print); printDollarSign();}
+  | CATNEW                  { char* print =catNew( $1 ); printf("%s\n", print); printDollarSign();}
+  | CATAPP                  { catApp( $1, 0 ); printDollarSign();}
+  | CATW                    { catApp( $1, 1 ); printDollarSign();}
+  | PWD                     { pwd(); printDollarSign();}
+  | WC                      { char* print = wc( $1 ); printf("%s\n", print); printDollarSign(); printDollarSign();}
+  | SORT                    { char** print = sortStrings( $1 ); int j = atoi(print[0]); if (j > 0){j++; for(int c = 1; c < j; c++) printf("%s", print[c]); printf("\n");} else printf("%s\n",  print[0]); printDollarSign();}
+  | DATE                    { date(); printDollarSign();}
+  | PIPPET                  { pipeFunction( $1 ); printDollarSign();}
+  | GREP                    { grep( $1); printDollarSign();}
+  | REV                     { rev( $1 ); printDollarSign();}
+  | WRITEOVER               { writeAppend($1, 1); printDollarSign();}
+  | APPENDTO                { writeAppend($1, 0); printDollarSign();}
   ;
 
 
