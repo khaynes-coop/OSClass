@@ -47,7 +47,7 @@ environment variable expansion - by Logan R
 ls - by Logan R
 pwd - by Logan R
 wc - by Logan R
-wc Flags- by Logan R
+wc Flags - by Logan R
 date - by Logan R
 grep - by Logan R
 rev - by Logan R
